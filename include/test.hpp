@@ -3,15 +3,12 @@
 
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL.h"
+#include "map.hpp"
 #include <stdio.h>
 #include <iostream>
 #include <cstdlib>
-#include <math.h>
-#include <ctime>
 
 using namespace std;
-
-void map(int **map,int width,int height);
 
 class Game {
     
@@ -26,9 +23,7 @@ public:
 private:
     SDL_Window *window;
     SDL_Renderer * renderer;
-    int ** mapa;
-    int heightM;
-    int widthM;
+    Mapa mapa;
 };
 
 #endif

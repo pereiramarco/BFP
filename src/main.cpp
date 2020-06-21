@@ -1,4 +1,5 @@
 #include "../include/test.hpp"
+#include "../include/map.hpp"
 
 int main() {
     int n;
