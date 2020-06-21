@@ -1,5 +1,5 @@
 
-#include "../include/test.hpp"
+#include "../include/game.hpp"
 
 
 SDL_Texture * tiles;
