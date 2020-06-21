@@ -27,6 +27,8 @@ private:
     SDL_Window *window;
     SDL_Renderer * renderer;
     int ** mapa;
+    int heightM;
+    int widthM;
 };
 
 #endif

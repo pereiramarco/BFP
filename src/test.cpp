@@ -22,24 +22,35 @@ int closestCreator(int **map,int x,int y,int width,int height) {
     return tileMin;
 }
 
-void map(int **map,int width,int height,int fP) {
+bool hasWaterNeighbour (int **map,int x,int y,int height,int width) {
+    int i,j;
+    for (i=x-1;i<x+2;i++) {
+        for (j=y-1;j<y+2;j++) {
+            if (i>=0 && i<height && j>=0 && j<width && map[i][j]==0)
+                return true;
+        }
+    }
+    return false;
+}
+
+void map(int **map,int height,int width,int fP) {
     int i,j,posx,posy,tile,tmpM[height][width];
-    for (i=0;i<width;i++) {
-        for (j=0;j<height;j++) {
+    for (i=0;i<height;i++) {
+        for (j=0;j<width;j++) {
             map[i][j]=-1;
         }
     }
     srand((unsigned int)time(NULL));
     for (i=0;i<80;i++) {
-        if (rand()%100<30) {
-            posx=rand()%width;
+        if (rand()%100<fP) {
             posy=rand()%height;
+            posx=rand()%width;
             tile=rand()%100>50 ? 1 : 0;
-            map[posx][posy]=tile;
+            map[posy][posx]=tile;
         }
     }
-    for (i=0;i<width;i++) {
-        for (j=0;j<height;j++) {
+    for (i=0;i<height;i++) {
+        for (j=0;j<width;j++) {
             if (map[i][j]==-1) {
                 int tile=closestCreator(map,i,j,width,height);
                 tmpM[i][j]=tile;
@@ -48,9 +59,15 @@ void map(int **map,int width,int height,int fP) {
         }
 
     }
-    for (i=0;i<width;i++) {
-        for (j=0;j<height;j++)
+    for (i=0;i<height;i++) {
+        for (j=0;j<width;j++)
             map[i][j]=tmpM[i][j];
+    }
+    for (i=0;i<height;i++) {
+        for (j=0;j<width;j++) {
+            if (map[i][j]==1 && hasWaterNeighbour(map,i,j,height,width))
+                map[i][j]=2;
+        }
     }
 }
 
@@ -88,9 +105,11 @@ void Game::init(const char* title, int x, int y, int width, int height,bool full
     destR.y=0;
     srcR.x=0;
     srcR.y=0;
-    mapa=(int**)malloc(sizeof(int*)*50);
-    for (int i=0;i<50;i++) {
-        mapa[i]=(int*)malloc(sizeof(int)*50);
+    heightM=50;
+    widthM=50;
+    mapa=(int**)malloc(sizeof(int*)*heightM);
+    for (int i=0;i<heightM;i++) {
+        mapa[i]=(int*)malloc(sizeof(int)*widthM);
     }
 }
 
@@ -103,13 +122,23 @@ void Game::renderMap() {
     destR.y=0;
     srcR.x=0;
     srcR.y=0;
-    map(mapa,50,50,6);
+    map(mapa,heightM,widthM,30);
     SDL_RenderClear(renderer);
-    for (int i=0;i<50;i++) {
-        for (int j=0;j<50;j++,destR.x+=16) {
-            if (mapa[i][j]==0) srcR.x=16;
-            else if (mapa[i][j]==1) srcR.x=0;
-            else continue;
+    for (int i=0;i<heightM;i++) {
+        for (int j=0;j<widthM;j++,destR.x+=16) {
+            switch (mapa[i][j]) {
+                case (0):
+                    srcR.x=16;
+                break;
+                case (1):
+                    srcR.x=0;
+                break;
+                case (2):
+                    srcR.x=32;
+                break;
+                default:
+                break;
+            }
             SDL_RenderCopy(renderer,tiles,&srcR,&destR);
         }
         destR.x=0;
