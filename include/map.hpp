@@ -7,6 +7,7 @@
 class Mapa {
 public:
     void initMap(int h,int w);
+    void renderMap();
     int getHeight();
     int getWidth();
     int getTile(int i,int j);
