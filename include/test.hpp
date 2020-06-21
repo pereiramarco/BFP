@@ -4,7 +4,12 @@
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL.h"
 #include <stdio.h>
+#include <iostream>
 #include <cstdlib>
+#include <math.h>
+#include <ctime>
+
+using namespace std;
 
 void map(int **map,int width,int height);
 

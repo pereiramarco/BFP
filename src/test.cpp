@@ -1,47 +1,59 @@
 
 #include "../include/test.hpp"
 
-
-int getSurroundingTiles(int ** map,int x, int y) {
-    int tiles=0;
-    for (int i=x-1;i<x+2;i++) {
-        for (int j=y-1;j<y+2;j++) {
-            if (i!=x && j!=y && i>=0 && i<50 && j>=0 && j<50)
-                tiles+=map[i][j];
-        }
-    }
-    return tiles;
+double distanceBetweenPoints(int x1,int y1,int x2,int y2) {
+    return sqrt(pow(x2-x1,2)+pow(y2-y1,2));
 }
 
-void map (int **map,int width,int height,int fP) {
-    int i,j;
-    int tmpM[width][height];
-    for (i=0;i<width;i++) {
-        for (j=0;j<height;j++) {
-            srand(0);
-            map[i][j]= rand()%100<fP? 0 : 1;
-            printf("%d",map[i][j]);
-        }
-        printf("\n");
-    }
-    for (int t=0;t<2;t++) {
-        for (i=0;i<width;i++) {
-            for (j=0;j<height;j++) {
-                int sT=getSurroundingTiles(map,i,j);
-                if (i==0 || j==0 || i==width-1 || j==height-1)
-                    tmpM[i][j]=0;
-                else if (sT > 4)
-			    	tmpM[i][j] = 1;
-			    else if (sT < 4)
-			        tmpM[i][j] = 0;
+int closestCreator(int **map,int x,int y,int width,int height) {
+    int tileMin=0,i,j; 
+    double dmin=1000;
+    for (i=0;i<height;i++) {
+        for (j=0;j<width;j++) {
+            if (map[i][j]!=-1) {
+                double d=distanceBetweenPoints(x,y,i,j);
+                if (d<dmin) {
+                    tileMin=map[i][j];
+                    dmin=d;
+                }
             }
         }
-        for (i=0;i<width;i++) {
-            for (j=0;j<height;j++)
-                map[i][j]=tmpM[i][j];
+    }
+    return tileMin;
+}
+
+void map(int **map,int width,int height,int fP) {
+    int i,j,posx,posy,tile,tmpM[height][width];
+    for (i=0;i<width;i++) {
+        for (j=0;j<height;j++) {
+            map[i][j]=-1;
         }
     }
+    srand((unsigned int)time(NULL));
+    for (i=0;i<80;i++) {
+        if (rand()%100<30) {
+            posx=rand()%width;
+            posy=rand()%height;
+            tile=rand()%100>50 ? 1 : 0;
+            map[posx][posy]=tile;
+        }
+    }
+    for (i=0;i<width;i++) {
+        for (j=0;j<height;j++) {
+            if (map[i][j]==-1) {
+                int tile=closestCreator(map,i,j,width,height);
+                tmpM[i][j]=tile;
+            }
+            else tmpM[i][j]=map[i][j];
+        }
+
+    }
+    for (i=0;i<width;i++) {
+        for (j=0;j<height;j++)
+            map[i][j]=tmpM[i][j];
+    }
 }
+
 
 SDL_Texture * tiles;
 SDL_Rect srcR,destR;
@@ -91,14 +103,14 @@ void Game::renderMap() {
     destR.y=0;
     srcR.x=0;
     srcR.y=0;
-    map(mapa,50,50,50);
+    map(mapa,50,50,6);
     SDL_RenderClear(renderer);
     for (int i=0;i<50;i++) {
-        for (int j=0;j<50;j++) {
+        for (int j=0;j<50;j++,destR.x+=16) {
             if (mapa[i][j]==0) srcR.x=16;
-            else srcR.x=0;
+            else if (mapa[i][j]==1) srcR.x=0;
+            else continue;
             SDL_RenderCopy(renderer,tiles,&srcR,&destR);
-            destR.x+=16;
         }
         destR.x=0;
         destR.y+=16;

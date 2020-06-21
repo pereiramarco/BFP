@@ -1,6 +1,7 @@
 #include "../include/test.hpp"
 
 int main() {
+    int n;
     Game *g=nullptr;
     g=new Game();
     g->init("Jogo",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,800,800,false);
@@ -8,6 +9,8 @@ int main() {
         g->renderMap();
         g->handleinput();
         g->update();
-        if (getchar()=='\n') break;
+        cin >> n;
+        if (n==1) break;
     }
+    SDL_Quit();
 }
