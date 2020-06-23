@@ -1,13 +1,16 @@
-#ifndef map
-#define map
+#pragma once
 
+#include "TextureManager.hpp"
+#include "SDL2/SDL_image.h"
+#include "SDL2/SDL.h"
 #include <math.h>
 #include <ctime>
 
 class Mapa {
 public:
-    void initMap(int h,int w);
-    void renderMap();
+    Mapa(const char * name,SDL_Renderer * renderer,int h,int w);
+    ~Mapa();
+    void render();
     int getHeight();
     int getWidth();
     int getTile(int i,int j);
@@ -15,9 +18,10 @@ public:
     bool hasWaterNeighbour(int x,int y);
     int closestCreator(int x,int y);
 private:
+    SDL_Renderer * renderer;
+    SDL_Texture * texture;
+    SDL_Rect srcR,destR;
     int **mapa;
     int height;
     int width;
 };
-
-#endif

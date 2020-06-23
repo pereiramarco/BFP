@@ -8,7 +8,7 @@ int main() {
     g=new Game();
     g->init("Jogo",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,960,540,false);
     while (g->stat) {
-        g->renderMap();
+        g->render();
         g->handleinput();
         g->update();
         cin >> n;

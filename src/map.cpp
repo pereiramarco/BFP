@@ -1,5 +1,55 @@
 #include "../include/map.hpp"
 
+Mapa::Mapa(const char * name,SDL_Renderer * ren,int h,int w) {
+    height=h;
+    width=w;
+    mapa=(int**)malloc(sizeof(int*)*height);
+    for (int i=0;i<height;i++) {
+        mapa[i]=(int*)malloc(sizeof(int)*width);
+    }
+    destR.h=16;
+    destR.w=16;
+    srcR.h=16;
+    srcR.w=16;
+    destR.x=0;
+    destR.y=0;
+    srcR.x=0;
+    srcR.y=0;
+    renderer=ren;
+    texture=TextureManager :: loadTexture(name,renderer);
+}
+
+void Mapa::render() {
+    destR.h=16;
+    destR.w=16;
+    srcR.h=16;
+    srcR.w=16;
+    destR.x=0;
+    destR.y=0;
+    srcR.x=0;
+    srcR.y=0;
+    randomizeMap(30);
+    for (int i=0;i<height;i++) {
+        for (int j=0;j<width;j++,destR.x+=16) {
+            switch (mapa[i][j]) {
+                case (0):
+                    srcR.x=16;
+                break;
+                case (1):
+                    srcR.x=0;
+                break;
+                case (2):
+                    srcR.x=32;
+                break;
+                default:
+                break;
+            }
+            SDL_RenderCopy(renderer,texture,&srcR,&destR);
+        }
+        destR.x=0;
+        destR.y+=16;
+    }
+}
 
 int Mapa::getHeight() {
     return height;
@@ -81,14 +131,5 @@ void Mapa::randomizeMap(int fP) {
             if (mapa[i][j]==1 && hasWaterNeighbour(i,j))
                 mapa[i][j]=2;
         }
-    }
-}
-
-void Mapa::initMap(int h,int w) {
-    height=h;
-    width=w;
-    mapa=(int**)malloc(sizeof(int*)*height);
-    for (int i=0;i<height;i++) {
-        mapa[i]=(int*)malloc(sizeof(int)*width);
     }
 }
