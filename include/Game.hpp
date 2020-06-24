@@ -2,7 +2,7 @@
 
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL.h"
-#include "map.hpp"
+#include "Map.hpp"
 #include "TextureManager.hpp"
 #include "GameObject.hpp"
 #include "GameMenu.hpp"

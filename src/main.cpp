@@ -1,12 +1,12 @@
-#include "../include/game.hpp"
-#include "../include/map.hpp"
+#include "../include/Game.hpp"
+#include "../include/Map.hpp"
 #include "../include/TextureManager.hpp"
 
 int main() {
     int n;
     Game *g=nullptr;
     g=new Game();
-    g->init("Jogo",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,960,540,false);
+    g->init("Jogo",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,1280,720,false);
     while (g->stat) {
         g->render();
         g->handleinput();

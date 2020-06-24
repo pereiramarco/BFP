@@ -1,4 +1,4 @@
-#include "../include/map.hpp"
+#include "../include/Map.hpp"
 
 Mapa::Mapa(const char * name,SDL_Renderer * ren,int h,int w) {
     height=h;
@@ -123,8 +123,9 @@ void Mapa::randomizeMap(int fP) {
 
     }
     for (i=0;i<height;i++) {
-        for (j=0;j<width;j++)
+        for (j=0;j<width;j++) {
             mapa[i][j]=tmpM[i][j];
+        }
     }
     for (i=0;i<height;i++) {
         for (j=0;j<width;j++) {
