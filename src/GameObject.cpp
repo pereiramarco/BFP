@@ -1,9 +1,10 @@
 
 #include "../include/GameObject.hpp"
+#include "../include/TextureManager.hpp"
 
 GameObject::GameObject(const char* sheet,SDL_Renderer* renderer,int x,int y) {
     this->renderer = renderer;
-    this->texture = TextureManager::loadTexture(sheet,this->renderer);
+    this->texture = TextureManager::loadTexture(sheet);
     posx=x;
     posy=y;
     destR.x=0;

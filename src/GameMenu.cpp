@@ -1,8 +1,9 @@
 #include "../include/GameMenu.hpp"
+#include "../include/TextureManager.hpp"
 
 GameMenu::GameMenu(const char* name, SDL_Renderer* ren) {
     this->renderer=ren;
-    this->texture=TextureManager::loadTexture(name,renderer);
+    this->texture=TextureManager::loadTexture(name);
     destR.h=540;
     destR.w=960;
     srcR.h=540;
@@ -14,6 +15,6 @@ GameMenu::GameMenu(const char* name, SDL_Renderer* ren) {
 }
 
 void GameMenu::render() {
-    texture=TextureManager::loadTexture("assets/menu.png",renderer);
+    texture=TextureManager::loadTexture("assets/menu.png");
     SDL_RenderCopy(renderer,texture,&srcR,&destR);
 }

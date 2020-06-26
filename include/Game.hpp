@@ -2,9 +2,9 @@
 
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL.h"
+#include "ECS/ECS.hpp"
+#include "ECS/Components.hpp"
 #include "Map.hpp"
-#include "TextureManager.hpp"
-#include "GameObject.hpp"
 #include "GameMenu.hpp"
 #include <stdio.h>
 #include <iostream>
@@ -23,10 +23,10 @@ public:
     void update();
     int stat;
 
+    static SDL_Renderer * renderer;
 private:
     SDL_Window *window;
-    SDL_Renderer * renderer;
+    Manager manager;
     Mapa * mapa;
-    GameObject * player;
     GameMenu * menu;
 };

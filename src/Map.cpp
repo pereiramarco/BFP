@@ -1,4 +1,5 @@
 #include "../include/Map.hpp"
+#include "../include/TextureManager.hpp"
 
 Mapa::Mapa(const char * name,SDL_Renderer * ren,int h,int w) {
     height=h;
@@ -16,7 +17,7 @@ Mapa::Mapa(const char * name,SDL_Renderer * ren,int h,int w) {
     srcR.x=0;
     srcR.y=0;
     renderer=ren;
-    texture=TextureManager :: loadTexture(name,renderer);
+    texture=TextureManager :: loadTexture(name);
 }
 
 void Mapa::render() {
@@ -28,7 +29,7 @@ void Mapa::render() {
     destR.y=0;
     srcR.x=0;
     srcR.y=0;
-    randomizeMap(30);
+    randomizeMap(60);
     for (int i=0;i<height;i++) {
         for (int j=0;j<width;j++,destR.x+=16) {
             switch (mapa[i][j]) {

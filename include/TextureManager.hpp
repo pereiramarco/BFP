@@ -2,8 +2,10 @@
 
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL.h"
+#include "Game.hpp"
 
 class TextureManager {
-    public:
-    static SDL_Texture* loadTexture(const char * name,SDL_Renderer* renderer);
+public:
+    static SDL_Texture* loadTexture(const char * path);
+    static void draw(SDL_Texture * tex,SDL_Rect src,SDL_Rect dest);
 };

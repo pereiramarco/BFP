@@ -1,5 +1,7 @@
-
 #include "../include/Game.hpp"
+
+
+SDL_Renderer* Game::renderer = nullptr;
 
 Game::Game() {
 
@@ -20,9 +22,11 @@ void Game::init(const char* title, int x, int y, int width, int height,bool full
                 SDL_SetRenderDrawColor(renderer,255,255,255,255);
         }
     }
+    auto& nPlayer(manager.addEntity());
     mapa = new Mapa("assets/Tiles_Sheet-Sheet.png",renderer,45,80);
-    player= new GameObject("assets/First dude-Sheet.png",renderer,0,0);
-    menu= new GameMenu("assets/menu.png",renderer);
+    menu = new GameMenu("assets/menu.png",renderer);
+    nPlayer.addComponent<SpriteComponent>("assets/First dude-Sheet.png");
+    nPlayer.addComponent<PositionComponent>();
 }
 
 void Game::render() {
@@ -33,9 +37,10 @@ void Game::render() {
         break;
         case 2: //user está no mapa do mundo
             mapa->render();
+            manager.draw();
         break;
         case 3: //user está a jogar
-            player->render();
+            manager.draw();
         break;
         default :
         break;
@@ -48,6 +53,5 @@ void Game::handleinput() {
 }
 
 void Game::update() {
-
 }
 

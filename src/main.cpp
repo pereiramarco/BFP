@@ -1,6 +1,4 @@
 #include "../include/Game.hpp"
-#include "../include/Map.hpp"
-#include "../include/TextureManager.hpp"
 
 int main() {
     int n;
