@@ -3,8 +3,8 @@
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL.h"
 #include "ECS/ECS.hpp"
-#include "ECS/Components.hpp"
 #include "Map.hpp"
+#include "LocalMap.hpp"
 #include "GameMenu.hpp"
 #include <stdio.h>
 #include <iostream>
@@ -21,12 +21,14 @@ public:
     void render();
     void handleinput();
     void update();
-    int stat;
 
+    static int statb4;
+    static int stat;
     static SDL_Renderer * renderer;
+    static SDL_Event event;
 private:
     SDL_Window *window;
     Manager manager;
     Mapa * mapa;
-    GameMenu * menu;
+    LocalMap * local;
 };

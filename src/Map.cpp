@@ -8,30 +8,22 @@ Mapa::Mapa(const char * name,SDL_Renderer * ren,int h,int w) {
     for (int i=0;i<height;i++) {
         mapa[i]=(int*)malloc(sizeof(int)*width);
     }
-    destR.h=16;
-    destR.w=16;
-    srcR.h=16;
-    srcR.w=16;
-    destR.x=0;
-    destR.y=0;
-    srcR.x=0;
-    srcR.y=0;
     renderer=ren;
     texture=TextureManager :: loadTexture(name);
+    randomizeMap(60);
 }
 
 void Mapa::render() {
-    destR.h=16;
-    destR.w=16;
+    destR.h=24;
+    destR.w=24;
     srcR.h=16;
     srcR.w=16;
     destR.x=0;
     destR.y=0;
     srcR.x=0;
     srcR.y=0;
-    randomizeMap(60);
     for (int i=0;i<height;i++) {
-        for (int j=0;j<width;j++,destR.x+=16) {
+        for (int j=0;j<width;j++,destR.x+=24) {
             switch (mapa[i][j]) {
                 case (0):
                     srcR.x=16;
@@ -43,12 +35,26 @@ void Mapa::render() {
                     srcR.x=32;
                 break;
                 default:
+                    if (hasWaterNeighbour(i,j)) srcR.x=32;
+                        else srcR.x=0;
+                    SDL_RenderCopy(renderer,texture,&srcR,&destR);
+                    switch (mapa[i][j]) {
+                        case (3):
+                            srcR.x=80;
+                        break;
+                        case (4):
+                            srcR.x=64;
+                        break;
+                        case (5):
+                            srcR.x=48;
+                        break;
+                    }
                 break;
             }
             SDL_RenderCopy(renderer,texture,&srcR,&destR);
         }
         destR.x=0;
-        destR.y+=16;
+        destR.y+=24;
     }
 }
 
@@ -104,14 +110,12 @@ void Mapa::randomizeMap(int fP) {
             this->mapa[i][j]=-1;
         }
     }
-    srand((unsigned int)time(NULL));
-    for (i=0;i<80;i++) {
-        if (rand()%100<fP) {
-            posy=rand()%height;
-            posx=rand()%width;
-            tile=rand()%100>50 ? 1 : 0;
-            mapa[posy][posx]=tile;
-        }
+    srand((unsigned int)time(NULL)*rand());
+    for (i=0;i<fP;i++) {
+        posy=rand()%height;
+        posx=rand()%width;
+        tile=rand()%100>50 ? 1 : 0;
+        mapa[posy][posx]=tile;
     }
     for (i=0;i<height;i++) {
         for (j=0;j<width;j++) {
@@ -132,6 +136,21 @@ void Mapa::randomizeMap(int fP) {
         for (j=0;j<width;j++) {
             if (mapa[i][j]==1 && hasWaterNeighbour(i,j))
                 mapa[i][j]=2;
+            if (mapa[i][j]!=0) {
+                int r=rand()%101;
+                if (r<=1) {
+                    r=rand()%101;
+                    if (r<=60) {
+                        mapa[i][j]=3;
+                    }
+                    else if (r<=90) {
+                        mapa[i][j]=4;
+                    }
+                    else {
+                        mapa[i][j]=5;
+                    }
+                }
+            }
         }
     }
 }

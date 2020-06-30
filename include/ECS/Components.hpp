@@ -1,5 +1,9 @@
 #pragma once
 #include "ECS.hpp"
-#include "PositionComponent.hpp"
-#include "SpeedComponent.hpp"
+#include "MenuKeyboardController.hpp"
+#include "MenuPositionComponent.hpp"
+#include "MenuSpriteComponent.hpp"
+#include "KeyboardController.hpp"
+#include "TransformComponent.hpp"
 #include "SpriteComponent.hpp"
+#include "MenuPositionComponent.hpp"

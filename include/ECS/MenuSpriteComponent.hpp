@@ -2,26 +2,26 @@
 
 #include "SDL2/SDL.h"
 #include "../TextureManager.hpp"
-#include "TransformComponent.hpp"
+#include "MenuPositionComponent.hpp"
 
-class SpriteComponent : public Component
+class MenuSpriteComponent : public Component
 {
 private:
-	TransformComponent * transform;
+	MenuPositionComponent * transform;
 	SDL_Texture *texture;
 	SDL_Rect srcRect, destRect;
 
 public:
 
-	SpriteComponent() = default;
+	MenuSpriteComponent() = default;
 
-	SpriteComponent(const char* path)
+	MenuSpriteComponent(const char* path)
 	{
 		setTexture(path);
 		
 	}
 
-	~SpriteComponent()
+	~MenuSpriteComponent()
 	{
 		SDL_DestroyTexture(texture);
 	}
@@ -32,18 +32,17 @@ public:
 	}
 
 	void init() override {
-		transform=&entity->getComponent<TransformComponent>();
+		transform=&entity->getComponent<MenuPositionComponent>();
 		srcRect.x = srcRect.y = destRect.x = destRect.y = 0;
-		srcRect.w = 32;
-		srcRect.h = 32;
-		destRect.w = 32;
-		destRect.h = 32;
+		srcRect.w = 960;
+		srcRect.h = 540;
+		destRect.w = 1920;
+		destRect.h = 1080;
 	}
 
 	void update() override
 	{
-		destRect.x = (int)transform->position.x;
-		destRect.y = (int)transform->position.y;
+		srcRect.x = 960*(int)transform->position.y;
 	}
 
 	void draw() override
