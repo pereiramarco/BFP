@@ -27,7 +27,7 @@ void Game::init(const char* title, int x, int y, int width, int height,bool full
         }
     }
     mapa = new Mapa("assets/Tiles-Sheet.png",renderer,45,80);
-    local = new LocalMap("assets/Desert-Sheet.png",renderer);
+    local = new LocalMap("assets/Beach-Sheet.png",renderer);
     auto& menu(manager.addEntity());
     menu.addComponent<MenuPositionComponent>(0,0,4);
     menu.addComponent<MenuSpriteComponent>("assets/Main-Menu-Sheet.png");
