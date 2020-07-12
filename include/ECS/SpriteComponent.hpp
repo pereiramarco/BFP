@@ -3,6 +3,7 @@
 #include "SDL2/SDL.h"
 #include "../TextureManager.hpp"
 #include "TransformComponent.hpp"
+#include "../Game.hpp"
 
 class SpriteComponent : public Component
 {
@@ -10,25 +11,42 @@ private:
 	TransformComponent * transform;
 	SDL_Texture *texture;
 	SDL_Rect srcRect, destRect;
+	bool drawb;
 
 public:
 
 	SpriteComponent() = default;
 
-	SpriteComponent(const char* path)
-	{
-		setTexture(path);
-		
+	SpriteComponent(std::string text) {
+		this->texture=Game::textures->getTexture(text);
+		drawb=true;
 	}
 
-	~SpriteComponent()
-	{
-		SDL_DestroyTexture(texture);
+	void setSrc(SDL_Rect r) {
+		srcRect=r;
 	}
 
-	void setTexture(const char* path)
-	{
-		texture = TextureManager::loadTexture(path);
+	void setDest(SDL_Rect r) {
+		destRect=r;
+	}
+
+	void setSrcX(int t,int x,int y) {
+		switch (t) {
+			case 0:
+				srcRect.x=x;
+			break;
+			case 1:
+				srcRect.y=y;
+			break;
+			case 2:
+				srcRect.x=x;
+				srcRect.y=y;
+			break;
+		}
+	}
+
+	void setDraw(bool t) {
+		drawb=t;
 	}
 
 	void init() override {
@@ -38,6 +56,7 @@ public:
 		srcRect.h = 32;
 		destRect.w = 32;
 		destRect.h = 32;
+		drawb=true;
 	}
 
 	void update() override
@@ -48,7 +67,8 @@ public:
 
 	void draw() override
 	{
-		TextureManager::draw(texture, srcRect, destRect);
+		if (drawb)
+			TextureManager::draw(texture, srcRect, destRect);
 	}
 
 };

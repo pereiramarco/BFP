@@ -7,3 +7,4 @@
 #include "TransformComponent.hpp"
 #include "SpriteComponent.hpp"
 #include "MenuPositionComponent.hpp"
+#include "TileComponent.hpp"

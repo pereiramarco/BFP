@@ -1,8 +1,10 @@
 #pragma once
 
 #include "SDL2/SDL.h"
+#include "../AssetManager.hpp"
 #include "../TextureManager.hpp"
 #include "MenuPositionComponent.hpp"
+#include "../Game.hpp"
 
 class MenuSpriteComponent : public Component
 {
@@ -15,20 +17,15 @@ public:
 
 	MenuSpriteComponent() = default;
 
-	MenuSpriteComponent(const char* path)
+	MenuSpriteComponent(std::string path)
 	{
 		setTexture(path);
 		
 	}
 
-	~MenuSpriteComponent()
+	void setTexture(std::string path)
 	{
-		SDL_DestroyTexture(texture);
-	}
-
-	void setTexture(const char* path)
-	{
-		texture = TextureManager::loadTexture(path);
+		texture = Game::textures->getTexture(path);
 	}
 
 	void init() override {

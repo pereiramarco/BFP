@@ -13,7 +13,7 @@ public:
         position.y=0;
         velocity.x=0;
         velocity.y=0;
-        speed=3;
+        speed=6;
     }
 
     TransformComponent(float x,float y) {
@@ -21,7 +21,7 @@ public:
         position.y=y;
         velocity.x=0;
         velocity.y=0;
-        speed=3;
+        speed=6;
     }
 
     void update() override {

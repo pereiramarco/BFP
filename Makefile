@@ -6,26 +6,26 @@ all: link
 run: link
 	./jogo
 
-link: texman.o vec2d.o lmap.o map.o menu.o object.o game.o main.o
-	g++ main.o lmap.o map.o menu.o object.o game.o vec2d.o texman.o $(SDL_FLAG) -o jogo
+link: texman.o vec2d.o assetman.o ECS.o lmap.o map.o game.o main.o
+	g++ main.o lmap.o map.o game.o vec2d.o ECS.o texman.o assetman.o $(SDL_FLAG) -o jogo
+
+ECS.o: include/ECS/ECS.hpp
+	g++ -o ECS.o -c src/ECS/ECS.cpp
 
 vec2d.o: include/Vector2D.hpp
 	g++ -o vec2d.o -c src/Vector2D.cpp
 
-texman.o: include/TextureManager.hpp
+texman.o: include/TextureManager.hpp include/Game.hpp
 	g++ -o texman.o -c src/TextureManager.cpp
 
-map.o: include/Map.hpp include/TextureManager.hpp
+assetman.o: include/AssetManager.hpp
+	g++ -o assetman.o -c src/AssetManager.cpp
+
+map.o: include/Map.hpp include/TextureManager.hpp include/LocalMap.hpp
 	g++ -o map.o -c src/Map.cpp
 
 lmap.o: include/LocalMap.hpp include/TextureManager.hpp
 	g++ -o lmap.o -c src/LocalMap.cpp
-
-menu.o: include/GameMenu.hpp include/TextureManager.hpp
-	g++ -o menu.o -c src/GameMenu.cpp
-
-object.o: include/GameObject.hpp include/TextureManager.hpp
-	g++ -o object.o -c src/GameObject.cpp
 
 game.o: include/Game.hpp include/ECS/Components.hpp
 	g++ -o game.o -c src/Game.cpp

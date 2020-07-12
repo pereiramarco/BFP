@@ -3,17 +3,21 @@
 #include "SDL2/SDL.h"
 #include <math.h>
 #include <ctime>
+#include <utility>
+#include <map>
+
 
 class LocalMap {
 private:
-    int mapa[50][50];
-    SDL_Texture* tex;
+    std::pair<char,int> **mapa;
+    std::map<char,SDL_Texture*> textures;
     SDL_Renderer * ren;
     SDL_Rect srcR,destR;
 public:
-    LocalMap(const char *name,SDL_Renderer * ren);
+    LocalMap(SDL_Renderer * ren,std::map<char,SDL_Texture*> tex);
     void render();
-    void randomizeTile();
+    void randomizeTile(char type);
+    std::pair<char,int> getTile(int i,int j);
 };
 
 
