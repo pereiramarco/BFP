@@ -70,5 +70,7 @@ class TileComponent : public Component {
             entity->destroy();
         }
         else sprite->setDraw((Game::stat==2) == world);
+        sprite->setSrc(src);
+        sprite->setDest(dest);
     }
 };

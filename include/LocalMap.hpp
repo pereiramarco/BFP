@@ -14,10 +14,12 @@ private:
     SDL_Renderer * ren;
     SDL_Rect srcR,destR;
 public:
+    LocalMap();
     LocalMap(SDL_Renderer * ren,std::map<char,SDL_Texture*> tex);
     void render();
     void randomizeTile(char type);
     std::pair<char,int> getTile(int i,int j);
+    void setTile(int i,int j,std::pair<char,int> par);
 };
 
 

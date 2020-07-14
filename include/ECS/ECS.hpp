@@ -146,6 +146,14 @@ public:
 		groupedEntities[mGroup].emplace_back(mEntity);
 	}
 
+	void delGroup(Group mGroup) {
+		auto& v = groupedEntities[mGroup];
+		while (!v.empty()) {
+			v.front()->delGroup(mGroup);
+			v.erase(v.begin());
+		}
+	}
+
 	std::vector<Entity*> getGroup(Group mGroup) {
 		return groupedEntities[mGroup];
 	}

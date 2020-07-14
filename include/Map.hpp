@@ -14,6 +14,7 @@ public:
     int getHeight();
     int getWidth();
     int getTile(int i,int j);
+    LocalMap* getLocalMap(int i,int j);
     std::pair<char,int> getLocalMapTile(int wI,int wJ,int i,int j);
     void randomizeMap(int fP);
     bool hasWaterNeighbour(int x,int y);

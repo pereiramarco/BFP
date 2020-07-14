@@ -5,6 +5,8 @@ SDL_Renderer* Game::renderer = nullptr;
 Manager Game::manager;
 AssetManager * Game::textures;
 SDL_Event Game::event;
+Vector2D * Game::worldPosition;
+Vector2D * Game::localPosition;
 int Game::stat=0;
 int Game::statb4=0;
 
@@ -28,6 +30,8 @@ void Game::init(const char* title, int x, int y, int width, int height,bool full
     int f= fullscreen ? SDL_WINDOW_FULLSCREEN : 0;
     stat=1;
     statb4=1;
+    worldPosition=new Vector2D(20,20);
+    localPosition=new Vector2D(24,24);
     if (SDL_Init(SDL_INIT_EVERYTHING)==0) {
         window=SDL_CreateWindow(title,x,y,width,height,f);
         if (window) {
@@ -82,6 +86,144 @@ void Game::initSave(std::string savename) {
     */
 }
 
+void Game::loadLocal() {
+    Vector2D topLeft=*(new Vector2D(0,0)),bottomRight=*(new Vector2D(0,0)),temp=*(new Vector2D(0,0));
+    LocalMap *temporary;
+    int num=0;
+    std::pair<char,int> par;
+    topLeft.x=localPosition->x-24;
+    topLeft.y=localPosition->y-24;
+    bottomRight.x=localPosition->x+25;
+    bottomRight.y=localPosition->y+25;
+    if (topLeft.x<0 && topLeft.y<0 && worldPosition->x!=0 && worldPosition->y!=0 ) {
+        temporary=mapa->getLocalMap(worldPosition->x-1,worldPosition->y-1);
+        temp.x=50+topLeft.x;
+        temp.y=50+topLeft.y;
+    }
+    else 
+        if (topLeft.x<0 && worldPosition->x!=0) {
+            temporary=mapa->getLocalMap(worldPosition->x-1,worldPosition->y);
+            temp.x=50+topLeft.x;
+            temp.y=50-topLeft.y;
+        }
+        else 
+            if (topLeft.y<0 && worldPosition->y!=0) {
+                temporary=mapa->getLocalMap(worldPosition->x,worldPosition->y-1);
+                temp.y=50+topLeft.y;
+                temp.x=50-topLeft.x;
+            }
+            else {
+                temporary=mapa->getLocalMap(worldPosition->x,worldPosition->y);
+                temp.y=50-topLeft.y;
+                temp.x=50-topLeft.x;
+            }
+    for(int i=temp.x;i<50;i++) {
+        for (int j=temp.y;j<50;j++) {
+            par=temporary->getTile(j,i);
+            addTile(i-temp.x,j-temp.y,false,-1,par);
+        }
+    }
+    if (topLeft.x<0 && bottomRight.y>49 && worldPosition->x!=0 && worldPosition->y!=44) {
+        temporary=mapa->getLocalMap(worldPosition->x-1,worldPosition->y+1);
+        temp.x=50+topLeft.x;
+        temp.y=bottomRight.y-50;
+    }
+    else 
+        if (topLeft.x<0 && worldPosition->x!=0) {
+            temporary=mapa->getLocalMap(worldPosition->x-1,worldPosition->y);
+            temp.x=50+topLeft.x;
+            temp.y=50-bottomRight.y;
+        }
+        else 
+            if (bottomRight.y>49 && worldPosition->y!=44) {
+                temporary=mapa->getLocalMap(worldPosition->x,worldPosition->y+1);
+                temp.y=bottomRight.y-50;
+                temp.x=50-topLeft.x;
+            }
+            else {
+                temporary=mapa->getLocalMap(worldPosition->x,worldPosition->y);
+                temp.y=50-bottomRight.y;
+                temp.x=50-topLeft.x;
+            }
+    for(int i=temp.x;i<50;i++) {
+        for (int j=0;j<temp.y;j++) {
+            par=temporary->getTile(j,i);
+            addTile(i-temp.x,j+temp.y,false,-1,par);
+            num++;
+        }
+    }
+    if (bottomRight.x>49 && topLeft.y<0 && worldPosition->x!=79 && worldPosition->y!=0) {
+        temporary=mapa->getLocalMap(worldPosition->x+1,worldPosition->y-1);
+        temp.x=bottomRight.x-50;
+        temp.y=50+topLeft.y;
+    }
+    else 
+        if (bottomRight.x>49 && worldPosition->x!=79) {
+            temporary=mapa->getLocalMap(worldPosition->x+1,worldPosition->y);
+            temp.x=bottomRight.x-50;
+            temp.y=50-topLeft.y;
+        }
+        else 
+            if (topLeft.y<0 && worldPosition->y!=0) {
+                temporary=mapa->getLocalMap(worldPosition->x,worldPosition->y-1);
+                temp.y=50+topLeft.y;
+                temp.x=50-bottomRight.x;
+            }
+            else {
+                temporary=mapa->getLocalMap(worldPosition->x,worldPosition->y);
+                temp.y=50-topLeft.y;
+                temp.x=50-bottomRight.x;
+            }
+    for(int i=0;i<temp.x;i++) {
+        for (int j=temp.y;j<50;j++) {
+            par=temporary->getTile(j,i);
+            addTile(i+temp.x,j-temp.y,false,-1,par);
+        }
+    }
+    if (bottomRight.x>49 && bottomRight.y>49 && worldPosition->x!=79 && worldPosition->y!=45) {
+        temporary=mapa->getLocalMap(worldPosition->x+1,worldPosition->y+1);
+        temp.x=bottomRight.x-50;
+        temp.y=bottomRight.y-50;
+    }
+    else 
+        if (bottomRight.x>49 && worldPosition->x!=79) {
+            temporary=mapa->getLocalMap(worldPosition->x+1,worldPosition->y);
+            temp.x=bottomRight.x-50;
+            temp.y=50-bottomRight.y;
+        }
+        else 
+            if (bottomRight.y>49 && worldPosition->y!=45) {
+                temporary=mapa->getLocalMap(worldPosition->x,worldPosition->y+1);
+                temp.y=50-bottomRight.y;
+                temp.x=bottomRight.x-50;
+            }
+            else {
+                temporary=mapa->getLocalMap(worldPosition->x,worldPosition->y);
+                temp.y=50-bottomRight.y;
+                temp.x=50-bottomRight.x;
+            }
+    for(int i=0;i<temp.x;i++) {
+        for (int j=0;j<temp.y;j++) {
+            par=temporary->getTile(j,i);
+            addTile(i+temp.x,j+temp.y,false,-1,par);
+        }
+    }
+}
+
+void Game::refreshLocal() {
+    //printf("Local: (%f,%f)\nWorld: (%f,%f)\n",localPosition->x,localPosition->y,worldPosition->x,worldPosition->y);
+    if (manager.getGroup(GroupLocalMap).empty()) return;
+    SDL_Rect destTL = manager.getGroup(GroupLocalMap).front()->getComponent<TileComponent>().dest;
+    SDL_Rect destBR = manager.getGroup(GroupLocalMap).back()->getComponent<TileComponent>().dest;
+    //printf("TOP LEFT: (%d,%d)\nBOTTOM RIGHT: (%d,%d)\n",destTL.x,destTL.y,destBR.x,destBR.y);
+    if (destTL.x>0 || destTL.y>0 || destBR.x < 1920 || destBR.y < 1080 ) {
+        manager.delGroup(GroupLocalMap);
+        loadLocal();
+        manager.getGroup(GroupPlayers).front()->getComponent<TransformComponent>().position.x=24*16;
+        manager.getGroup(GroupPlayers).front()->getComponent<TransformComponent>().position.y=24*16;
+    }
+}
+
 void Game::addTile(int x,int y,bool mundo, int mos, std::pair<char,int> type) {
     int r,d;
     auto& tile(manager.addEntity());
@@ -90,13 +232,14 @@ void Game::addTile(int x,int y,bool mundo, int mos, std::pair<char,int> type) {
         d=16;
     }
     else {
-        r=64;
+        r=16;
         d=32;
     }
     tile.addComponent<TileComponent>(x,y,d,d,r,r,mundo,mos,type);
     if (mundo) 
         tile.addGroup(GroupWorldMap);
-    else tile.addGroup(GroupLocalMap);
+    else 
+        tile.addGroup(GroupLocalMap);
 }
 
 void Game::render() {
@@ -106,7 +249,7 @@ void Game::render() {
     auto enemies = manager.getGroup(GroupEnemies);
     auto menus = manager.getGroup(GroupMenus);
     SDL_RenderClear(renderer);
-    for (auto&i : menus) {
+    for (auto& i : menus) {
         i->draw();
     }
     for (auto& i : tilesWorld) {
@@ -115,6 +258,7 @@ void Game::render() {
     for (auto& i : tilesLocal) {
         i->draw();
     }
+    printf("sao: %d\n",tilesLocal.size());
     for (auto& i : players) {
         i->draw();
     }
@@ -146,7 +290,7 @@ void Game::update() {
             menu.addComponent<MenuKeyboardController>();
         }
         else if (stat==2) {
-                initSave("nome");
+            initSave("nome");
             auto& nPlayer(manager.addEntity());
             nPlayer.addComponent<TransformComponent>();
             nPlayer.addComponent<SpriteComponent>("bald-dude");
@@ -154,16 +298,29 @@ void Game::update() {
             nPlayer.addGroup(GroupPlayers);
         }
         else if (stat==3) {
+            initSave("nome");
             auto& oldPlayer(manager.addEntity());
-            oldPlayer.addComponent<TransformComponent>();
+            oldPlayer.addComponent<TransformComponent>(23*16,23*16);
             oldPlayer.addComponent<SpriteComponent>("hairy-dude");
             oldPlayer.addComponent<KeyboardController>();
             oldPlayer.addGroup(GroupPlayers);
+            loadLocal();
         }
         else if (stat==4) {
         }
     }
+    refreshLocal();
     manager.refresh();
     manager.update();
+
+
+    if (!manager.getGroup(GroupPlayers).empty()){
+        Vector2D velocity = manager.getGroup(GroupPlayers).front()->getComponent<TransformComponent>().velocity;
+        int speed = manager.getGroup(GroupPlayers).front()->getComponent<TransformComponent>().speed;
+        for (auto tile : manager.getGroup(GroupLocalMap)) {
+            tile->getComponent<TileComponent>().dest.x-=speed*velocity.x;
+            tile->getComponent<TileComponent>().dest.y+=speed*velocity.y;
+        }
+    }
 }
 

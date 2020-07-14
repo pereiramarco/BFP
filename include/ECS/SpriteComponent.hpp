@@ -54,8 +54,8 @@ public:
 		srcRect.x = srcRect.y = destRect.x = destRect.y = 0;
 		srcRect.w = 32;
 		srcRect.h = 32;
-		destRect.w = 32;
-		destRect.h = 32;
+		destRect.w = 16;
+		destRect.h = 16;
 		drawb=true;
 	}
 

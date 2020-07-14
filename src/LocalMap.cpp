@@ -1,6 +1,17 @@
 #include "../include/LocalMap.hpp"
 #include "../include/TextureManager.hpp"
 
+LocalMap::LocalMap() {
+    mapa=(std::pair<char,int> **)malloc(sizeof(std::pair<char,int>*)*50);
+    for (int i=0;i<50;i++) {
+        mapa[i]=(std::pair<char,int> *)malloc(sizeof(std::pair<char,int>)*50);
+        for (int j=0;j<50;j++) {
+            mapa[i][j].second=-1;
+            mapa[i][j].first='.';
+        }
+    }
+}
+
 LocalMap::LocalMap(SDL_Renderer* rend,std::map<char,SDL_Texture*>text) {
     ren=rend;
     textures=text;
@@ -16,6 +27,10 @@ LocalMap::LocalMap(SDL_Renderer* rend,std::map<char,SDL_Texture*>text) {
 
 std::pair<char,int> LocalMap::getTile(int i,int j) {
     return mapa[i][j];
+}
+
+void LocalMap::setTile(int i,int j,std::pair<char,int> par) {
+    this->mapa[i][j]=par;
 }
 
 void LocalMap::randomizeTile(char type) {

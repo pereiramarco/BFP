@@ -22,6 +22,8 @@ public:
     void render();
     void handleinput();
     void update();
+    void loadLocal();
+    void refreshLocal();
 
     static void addTile(int x,int y,bool mundo, int tile, std::pair<char,int> type);
     static int statb4;
@@ -29,9 +31,10 @@ public:
     static SDL_Renderer * renderer;
     static SDL_Event event;
     static AssetManager* textures;
+    static Vector2D * worldPosition;
+    static Vector2D * localPosition;
 private:
     static Manager manager;
     SDL_Window *window;
     Mapa * mapa;
-    LocalMap * local;
 };

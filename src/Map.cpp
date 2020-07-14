@@ -36,6 +36,10 @@ int Mapa::getTile(int i,int j) {
     return worldMap[i][j];
 }
 
+LocalMap* Mapa::getLocalMap(int i,int j) {
+    return this->mapa[j][i];//recebe x e y mas na matriz está trocado
+}
+
 std::pair<char,int> Mapa::getLocalMapTile(int wI,int wJ,int i,int j) {
     return mapa[wI][wJ]->getTile(i,j);
 }
