@@ -14,8 +14,6 @@ class TileComponent : public Component {
     SpriteComponent * sprite;
 
     bool world;
-    char type;
-    int tileID;
     std::string path;
     SDL_Rect src,dest;
 
@@ -30,7 +28,6 @@ class TileComponent : public Component {
         src.w=sW;
         src.h=sH;
         src.y=0;
-        this->tileID=tileID;
         if (mundo) {
             path="world-tiles";
             src.x=tileID*16;
@@ -61,16 +58,17 @@ class TileComponent : public Component {
         &entity->addComponent<SpriteComponent>(path);
         pos=&entity->getComponent<TransformComponent>();
         sprite=&entity->getComponent<SpriteComponent>();
+        pos->position.x=dest.x;
+        pos->position.y=dest.y;
         sprite->setSrc(src);
-        sprite->setDest(dest);
     }
 
     void update() override {
         if (Game::stat!=2 && Game::stat!=3) {
             entity->destroy();
         }
-        else sprite->setDraw((Game::stat==2) == world);
-        sprite->setSrc(src);
-        sprite->setDest(dest);
+        else {
+            sprite->setDraw((Game::stat==2) == world);
+        }
     }
 };

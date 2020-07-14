@@ -148,10 +148,10 @@ public:
 
 	void delGroup(Group mGroup) {
 		auto& v = groupedEntities[mGroup];
-		while (!v.empty()) {
-			v.front()->delGroup(mGroup);
-			v.erase(v.begin());
+		for (auto i : v) {
+			i->destroy();
 		}
+		refresh();
 	}
 
 	std::vector<Entity*> getGroup(Group mGroup) {
