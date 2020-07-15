@@ -10,6 +10,8 @@ Vector2D * Game::worldPosition;
 Vector2D * Game::localPosition;
 int Game::stat=0;
 int Game::statb4=0;
+static int first=0;
+static int loaded=0;
 
 enum groupLabels : std::size_t {
     GroupWorldMap,
@@ -32,7 +34,7 @@ void Game::init(const char* title, int x, int y, int width, int height,bool full
     stat=1;
     statb4=1;
     worldPosition=new Vector2D(20,20);
-    localPosition=new Vector2D(15.078,8.4375);
+    localPosition=new Vector2D(14,7.4375);
     if (SDL_Init(SDL_INIT_EVERYTHING)==0) {
         window=SDL_CreateWindow(title,x,y,width,height,f);
         if (window) {
@@ -89,15 +91,65 @@ void Game::initSave(std::string savename) {
 
 void Game::loadLocal() {
     manager.delGroup(GroupLocalMap);
-    LocalMap *temporary=mapa->getLocalMap(worldPosition->y,worldPosition->x);
-    for (int i=0;i<50;i++ ) {
-        for (int j=0;j<50;j++) {
-            addTile(i-localPosition->y+8.4375,j-localPosition->x+15.078,false,-1,temporary->getTile(i,j));
+    int r,d;
+    LocalMap *temporary;
+    for (int k=0;k<9;k++) {
+        switch (k) {
+            case 0:
+                r=-50;
+                d=-50;
+                temporary = mapa->getLocalMap(worldPosition->x-1,worldPosition->y-1);
+            break;
+            case 1:
+                r=0;
+                d=-50;
+                temporary = mapa->getLocalMap(worldPosition->x-1,worldPosition->y);
+            break;
+            case 2:
+                r=50;
+                d=-50;
+                temporary = mapa->getLocalMap(worldPosition->x-1,worldPosition->y+1);
+            break;
+            case 3:
+                r=-50;
+                d=0;
+                temporary = mapa->getLocalMap(worldPosition->x,worldPosition->y-1);
+            break;
+            case 4:
+                r=0;
+                d=0;
+                temporary = mapa->getLocalMap(worldPosition->x,worldPosition->y);
+            break;
+            case 5:
+                r=50;
+                d=0;
+                temporary = mapa->getLocalMap(worldPosition->x,worldPosition->y+1);
+            break;
+            case 6:
+                r=-50;
+                d=50;
+                temporary = mapa->getLocalMap(worldPosition->x+1,worldPosition->y-1);
+            break;
+            case 7:
+                r=0;
+                d=50;
+                temporary = mapa->getLocalMap(worldPosition->x+1,worldPosition->y);
+            break;
+            case 8:
+                r=50;
+                d=50;
+                temporary = mapa->getLocalMap(worldPosition->x+1,worldPosition->y+1);
+            break;
+        }
+        for (int i=0;i<50;i++ ) {
+            for (int j=0;j<50;j++) {
+                addTile(i-localPosition->y+7.4375+r,j-localPosition->x+14+d,false,-1,temporary->getTile(i,j));
+            }
         }
     }
 }
 
-void Game::addTile(int x,int y,bool mundo, int mos, std::pair<char,int> type) {
+void Game::addTile(float x,float y,bool mundo, int mos, std::pair<char,int> type) {
     int r,d;
     auto& tile(manager.addEntity());
     if (mundo) {
@@ -162,15 +214,19 @@ void Game::update() {
             menu.addComponent<MenuKeyboardController>();
         }
         else if (stat==2) {
-            initSave("nome");
             auto& nPlayer(manager.addEntity());
             nPlayer.addComponent<TransformComponent>();
             nPlayer.addComponent<SpriteComponent>("bald-dude");
             nPlayer.addComponent<KeyboardController>();
+            SDL_Rect r; r.w=24;r.h=24; 
+            nPlayer.getComponent<SpriteComponent>().setDest(r);
+            nPlayer.getComponent<TransformComponent>().position.x=worldPosition->x*24;
+            nPlayer.getComponent<TransformComponent>().position.y=worldPosition->y*24;
             nPlayer.addGroup(GroupPlayers);
         }
         else if (stat==3) {
-            initSave("nome");
+            if (first==0) initSave("nome");
+            first=1;
             auto& oldPlayer(manager.addEntity());
             oldPlayer.addComponent<TransformComponent>();
             oldPlayer.addComponent<SpriteComponent>("hairy-dude");
@@ -183,6 +239,7 @@ void Game::update() {
     }
     manager.refresh();
     manager.update();
+    //printf("Local: (%f,%f)\nWorld: (%f,%f)\n",Game::localPosition->x,Game::localPosition->y,Game::worldPosition->x,Game::worldPosition->y);
     if (!manager.getGroup(GroupPlayers).empty()){
         Vector2D velocity = manager.getGroup(GroupPlayers).front()->getComponent<TransformComponent>().velocity;
         int speed = manager.getGroup(GroupPlayers).front()->getComponent<TransformComponent>().speed;

@@ -19,7 +19,7 @@ class TileComponent : public Component {
 
     TileComponent() = default;
 
-    TileComponent(int x,int y,int sH,int sW,int dH,int dW,bool mundo, int tileID,std::pair<char,int> type) {
+    TileComponent(float x,float y,int sH,int sW,int dH,int dW,bool mundo, int tileID,std::pair<char,int> type) {
         world=mundo;
         dest.y=x*dW;
         dest.x=y*dH;
@@ -37,10 +37,10 @@ class TileComponent : public Component {
                 case 'a':
                     path="water-tiles";
                     break;
-                case 'b':
+                case 'c':
                     path="beach-tiles";
                     break;
-                case 'c':
+                case 'b':
                     path="plains-tiles";
                     break;
                 case 'd':
@@ -61,6 +61,7 @@ class TileComponent : public Component {
         pos->position.x=dest.x;
         pos->position.y=dest.y;
         sprite->setSrc(src);
+        sprite->setDest(dest);
     }
 
     void update() override {

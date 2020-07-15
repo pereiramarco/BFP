@@ -23,7 +23,7 @@ public:
     void handleinput();
     void update();
 
-    static void addTile(int x,int y,bool mundo, int tile, std::pair<char,int> type);
+    static void addTile(float x,float y,bool mundo, int tile, std::pair<char,int> type);
     static void loadLocal();
     static int statb4;
     static int stat;

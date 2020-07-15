@@ -140,8 +140,7 @@ void Mapa::randomizeLocalMaps() {
     int i,j,r;
     for (i=0;i<height;i++) {
         for (j=0;j<width;j++) {
-            r=worldMap[i][j]>2?1:worldMap[i][j];
-            mapa[i][j]->randomizeTile(r+'a');
+            mapa[i][j]->randomizeTile(worldMap[i][j]+'a');
         }
     }
 }

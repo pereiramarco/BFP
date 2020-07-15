@@ -30,7 +30,7 @@ public:
 		destRect=r;
 	}
 
-	void setSrcX(int t,int x,int y) {
+	void setSrc(int t,int x,int y) {
 		switch (t) {
 			case 0:
 				srcRect.x=x;

@@ -58,21 +58,3 @@ void LocalMap::randomizeTile(char type) {
         }
     }
 }
-
-void LocalMap::render() {
-    srcR.h=32;
-    srcR.w=32;
-    srcR.y=0;
-    destR.h=72;
-    destR.w=96;
-    destR.x=0;
-    destR.y=0;
-    for (int i=0;i<15;i++) {
-        for (int j=0;j<20;j++,destR.x+=96) {
-            srcR.x=mapa[i][j].second*32;
-            SDL_RenderCopy(ren,textures[mapa[i][j].first],&srcR,&destR);
-        }
-        destR.x=0;
-        destR.y+=72;
-    }
-}
