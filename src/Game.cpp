@@ -94,85 +94,96 @@ void Game::initSave(std::string savename) {
 
 void Game::loadLocal() {
     manager.delGroup(GroupLocalMap);
-    int r,d,i,j,maxI,maxJ;
+    int r,d,i,ii,j,jj,maxI,maxJ;
     LocalMap *temporary;
-    printf("WorldPosition:\nX = %f\nY = %f\n",worldPosition->x,worldPosition->y);
+    //printf("WorldPosition:\nX = %f\nY = %f\n",worldPosition->x,worldPosition->y);
     for (int k=0;k<9;k++) {
+        ii=0;jj=0;maxI=ConstantValues::localMapSizeH;maxJ=ConstantValues::localMapSizeW;
         temporary=NULL;
         switch (k) {
             case 0:
                 if (worldPosition->x<=0 || worldPosition->y<=0) break;
-                puts("loading top left");
+                //puts("loading top left");
+                ii=35;
+                jj=35;
                 r=worldPosition->x-1;
                 d=worldPosition->y-1;
                 temporary = mapa->getLocalMap(worldPosition->x-1,worldPosition->y-1);
             break;
             case 1:
                 if (worldPosition->x<=0) break;
-                puts("loading top center");
+                //puts("loading top center");
+                jj=35;
                 r=worldPosition->x-1;
                 d=worldPosition->y;
                 temporary = mapa->getLocalMap(worldPosition->x-1,worldPosition->y);
             break;
             case 2:
                 if (worldPosition->x<=0 || worldPosition->y>=ConstantValues::mapW-1) break;
-                puts("loading top right");
+                //puts("loading top right");
+                maxI=16;
+                jj=35;
                 r=worldPosition->x-1;
                 d=worldPosition->y+1;
                 temporary = mapa->getLocalMap(worldPosition->x-1,worldPosition->y+1);
             break;
             case 3:
                 if (worldPosition->y<=0) break;
-                puts("loading center left");
+                //puts("loading center left");
+                ii=35;
                 r=worldPosition->x;
                 d=worldPosition->y-1;
                 temporary = mapa->getLocalMap(worldPosition->x,worldPosition->y-1);
             break;
             case 4:
-                puts("loading center");
+                //puts("loading center");
                 r=worldPosition->x;
                 d=worldPosition->y;
                 temporary = mapa->getLocalMap(worldPosition->x,worldPosition->y);
             break;
             case 5:
                 if (worldPosition->y>=ConstantValues::mapW-1) break;
-                puts("loading center right");
+                //puts("loading center right");
+                maxI=15;
                 r=worldPosition->x;
                 d=worldPosition->y+1;
                 temporary = mapa->getLocalMap(worldPosition->x,worldPosition->y+1);
             break;
             case 6:
                 if (worldPosition->x>=ConstantValues::mapH-1 || worldPosition->y<=0) break;
-                puts("loading bottom left");
+                //puts("loading bottom left");
+                ii=35;
+                maxJ=16;
                 r=worldPosition->x+1;
                 d=worldPosition->y-1;
                 temporary = mapa->getLocalMap(worldPosition->x+1,worldPosition->y-1);
             break;
             case 7:
                 if (worldPosition->x>=ConstantValues::mapH-1) break;
-                puts("loading bottom center");
+                //puts("loading bottom center");
+                maxJ=16;
                 r=worldPosition->x+1;
                 d=worldPosition->y;
                 temporary = mapa->getLocalMap(worldPosition->x+1,worldPosition->y);
             break;
             case 8:
                 if (worldPosition->x>=ConstantValues::mapH-1 || worldPosition->y>=ConstantValues::mapW-1) break;
-                puts("loading bottom right");
+                //puts("loading bottom right");
+                maxI=15;
+                maxJ=16;
                 r=worldPosition->x+1;
                 d=worldPosition->y+1;
                 temporary = mapa->getLocalMap(worldPosition->x+1,worldPosition->y+1);
             break;
         }
         if (temporary) {
-            for (i=0;i<ConstantValues::localMapSizeH;i++ ) {
-                for (j=0;j<ConstantValues::localMapSizeW;j++) {
+            for (i=ii;i<maxI;i++) {
+                for (j=jj;j<maxJ;j++) {
                     addTile(i+ConstantValues::localMapSizeH*d,j+ConstantValues::localMapSizeW*r,false,-1,temporary->getTile(i,j));
                 }
             }
         }
     }
-
-        puts("\n\n");
 }
 
 void Game::updateCamAndPos() {
