@@ -4,6 +4,7 @@
 #include "../TextureManager.hpp"
 #include "TransformComponent.hpp"
 #include "../Game.hpp"
+#include "../ConstantValues.hpp"
 
 class SpriteComponent : public Component
 {
@@ -54,15 +55,15 @@ public:
 		srcRect.x = srcRect.y = destRect.x = destRect.y = 0;
 		srcRect.w = 32;
 		srcRect.h = 32;
-		destRect.w = 64;
-		destRect.h = 64;
+		destRect.w = ConstantValues::localTileW;
+		destRect.h = ConstantValues::localTileH;
 		drawb=true;
 	}
 
 	void update() override
 	{
-		destRect.x = (int)transform->position.x;
-		destRect.y = (int)transform->position.y;
+		destRect.x = static_cast<int> (transform->position.x - Game::camera.x);
+		destRect.y = static_cast<int> (transform->position.y - Game::camera.y);
 	}
 
 	void draw() override

@@ -61,7 +61,9 @@ public:
 
 	void update()
 	{
-		for (auto& c : components) c->update();
+		for (auto& c : components) {
+			c->update();
+		}
 	}
 	void draw() 
 	{
@@ -147,8 +149,8 @@ public:
 	}
 
 	void delGroup(Group mGroup) {
-		auto& v = groupedEntities[mGroup];
-		for (auto i : v) {
+		auto&& v = groupedEntities[mGroup];
+		for (auto&& i : v) {
 			i->destroy();
 		}
 		refresh();

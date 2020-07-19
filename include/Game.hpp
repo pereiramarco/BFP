@@ -22,9 +22,10 @@ public:
     void render();
     void handleinput();
     void update();
+    void updateCamAndPos();
+    void loadLocal();
 
     static void addTile(float x,float y,bool mundo, int tile, std::pair<char,int> type);
-    static void loadLocal();
     static int statb4;
     static int stat;
     static SDL_Renderer * renderer;
@@ -32,6 +33,7 @@ public:
     static AssetManager* textures;
     static Vector2D * worldPosition;
     static Vector2D * localPosition;
+    static SDL_Rect camera;
 private:
     static Manager manager;
     static Mapa * mapa;

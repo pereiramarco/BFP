@@ -137,7 +137,7 @@ void Mapa::randomizeMap(int fP) {
 }
 
 void Mapa::randomizeLocalMaps() {
-    int i,j,r;
+    int i,j;
     for (i=0;i<height;i++) {
         for (j=0;j<width;j++) {
             mapa[i][j]->randomizeTile(worldMap[i][j]+'a');

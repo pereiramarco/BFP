@@ -1,11 +1,12 @@
 #include "../include/LocalMap.hpp"
 #include "../include/TextureManager.hpp"
+#include "../include/ConstantValues.hpp"
 
 LocalMap::LocalMap() {
-    mapa=(std::pair<char,int> **)malloc(sizeof(std::pair<char,int>*)*50);
-    for (int i=0;i<50;i++) {
-        mapa[i]=(std::pair<char,int> *)malloc(sizeof(std::pair<char,int>)*50);
-        for (int j=0;j<50;j++) {
+    mapa=(std::pair<char,int> **)malloc(sizeof(std::pair<char,int>*)*ConstantValues::localMapSizeW);
+    for (int i=0;i<ConstantValues::localMapSizeW;i++) {
+        mapa[i]=(std::pair<char,int> *)malloc(sizeof(std::pair<char,int>)*ConstantValues::localMapSizeH);
+        for (int j=0;j<ConstantValues::localMapSizeH;j++) {
             mapa[i][j].second=-1;
             mapa[i][j].first='.';
         }
@@ -15,10 +16,10 @@ LocalMap::LocalMap() {
 LocalMap::LocalMap(SDL_Renderer* rend,std::map<char,SDL_Texture*>text) {
     ren=rend;
     textures=text;
-    mapa=(std::pair<char,int> **)malloc(sizeof(std::pair<char,int>*)*50);
-    for (int i=0;i<50;i++) {
-        mapa[i]=(std::pair<char,int> *)malloc(sizeof(std::pair<char,int>)*50);
-        for (int j=0;j<50;j++) {
+    mapa=(std::pair<char,int> **)malloc(sizeof(std::pair<char,int>*)*ConstantValues::localMapSizeW);
+    for (int i=0;i<ConstantValues::localMapSizeW;i++) {
+        mapa[i]=(std::pair<char,int> *)malloc(sizeof(std::pair<char,int>)*ConstantValues::localMapSizeH);
+        for (int j=0;j<ConstantValues::localMapSizeH;j++) {
             mapa[i][j].second=-1;
             mapa[i][j].first='.';
         }
@@ -35,11 +36,11 @@ void LocalMap::setTile(int i,int j,std::pair<char,int> par) {
 
 void LocalMap::randomizeTile(char type) {
     int i,j,r;
-    for (i=0;i<50;i++) {
-        for (j=0;j<50;j++) {
+    for (i=0;i<ConstantValues::localMapSizeW;i++) {
+        for (j=0;j<ConstantValues::localMapSizeH;j++) {
             mapa[i][j].first=type;
             if (mapa[i][j].second==-1) {
-                if (i!=49 && j!=49 && mapa[i][j+1].second==-1 && mapa[i+1][j+1].second==-1) r=rand()%101;
+                if (i!=ConstantValues::localMapSizeW-1 && j!=ConstantValues::localMapSizeH-1 && mapa[i][j+1].second==-1 && mapa[i+1][j+1].second==-1) r=rand()%101;
                 else r=rand()%100;
                 if (r>=100) {
                     mapa[i][j].second=6;

@@ -1,4 +1,5 @@
 #include "../include/Game.hpp"
+#include "../include/ConstantValues.hpp"
 
 int main() {
     int frametime;
@@ -7,7 +8,7 @@ int main() {
     Uint32 framestart;
     Game *g=nullptr;
     g=new Game();
-    g->init("BFP",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,1920,1080,true);
+    g->init("BFP",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,ConstantValues::screenSizeW,ConstantValues::screenSizeH,true);
     while (Game::stat) {
         framestart=SDL_GetTicks();
         g->render();

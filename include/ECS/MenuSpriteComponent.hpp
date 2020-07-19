@@ -5,6 +5,7 @@
 #include "../TextureManager.hpp"
 #include "MenuPositionComponent.hpp"
 #include "../Game.hpp"
+#include "../ConstantValues.hpp"
 
 class MenuSpriteComponent : public Component
 {
@@ -33,8 +34,8 @@ public:
 		srcRect.x = srcRect.y = destRect.x = destRect.y = 0;
 		srcRect.w = 960;
 		srcRect.h = 540;
-		destRect.w = 1920;
-		destRect.h = 1080;
+		destRect.w = ConstantValues::screenSizeW;
+		destRect.h = ConstantValues::screenSizeH;
 	}
 
 	void update() override

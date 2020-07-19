@@ -1,7 +1,9 @@
 #include "../include/Game.hpp"
 #include "../include/ECS/Components.hpp"
+#include "../include/ConstantValues.hpp"
 
 SDL_Renderer* Game::renderer = nullptr;
+Entity* player = nullptr;
 Manager Game::manager;
 Mapa * Game::mapa;
 AssetManager * Game::textures;
@@ -12,6 +14,7 @@ int Game::stat=0;
 int Game::statb4=0;
 static int first=0;
 static int loaded=0;
+SDL_Rect Game::camera = {0,0,ConstantValues::mapH*ConstantValues::localMapSizeH*ConstantValues::localTileH,ConstantValues::mapW*ConstantValues::localMapSizeW*ConstantValues::localTileW};
 
 enum groupLabels : std::size_t {
     GroupWorldMap,
@@ -33,8 +36,8 @@ void Game::init(const char* title, int x, int y, int width, int height,bool full
     int f= fullscreen ? SDL_WINDOW_FULLSCREEN : 0;
     stat=1;
     statb4=1;
-    worldPosition=new Vector2D(20,20);
-    localPosition=new Vector2D(14,7.4375);
+    worldPosition=new Vector2D(0,0);
+    localPosition=new Vector2D(ConstantValues::playerLocalPosX-1,ConstantValues::playerLocalPosY-1);
     if (SDL_Init(SDL_INIT_EVERYTHING)==0) {
         window=SDL_CreateWindow(title,x,y,width,height,f);
         if (window) {
@@ -60,22 +63,22 @@ void Game::init(const char* title, int x, int y, int width, int height,bool full
 }
 
 void Game::initSave(std::string savename) {
-    int i,j,k,l;
-    mapa = new Mapa(renderer,45,80);
+    //int i,j,k,l;
+    mapa = new Mapa(renderer,ConstantValues::mapH,ConstantValues::mapW);
     /*
     std::ofstream saveFile (savename);
     for (i=0;i<45;i++) {
         for (j=0;j<80;j++) {
             saveFile<<std::to_string(mapa->getTile(i,j));
-            if (j!=79) saveFile<<",";
+            if (j!=Constantvalues) saveFile<<",";
             else saveFile<<"\n";
         }
     }
     saveFile<<"\n";
     for (i=0;i<45;i++) {
         for (j=0;j<80;j++) {
-            for (k=0;k<50;k++) {
-                for (l=0;l<50;l++) {
+            for (k=0;k<ConstantValues::localMapSizeW;k++) {
+                for (l=0;l<ConstantValues::localMapSizeW;l++) {
                     std::pair<char,int> pair=mapa->getLocalMapTile(i,j,k,l);
                     saveFile<<pair.first<<"-"<<pair.second;
                     if (l!=49) saveFile<<"|";
@@ -91,76 +94,153 @@ void Game::initSave(std::string savename) {
 
 void Game::loadLocal() {
     manager.delGroup(GroupLocalMap);
-    int r,d;
+    int r,d,i,j,maxI,maxJ;
     LocalMap *temporary;
+    printf("WorldPosition:\nX = %f\nY = %f\n",worldPosition->x,worldPosition->y);
     for (int k=0;k<9;k++) {
+        temporary=NULL;
         switch (k) {
             case 0:
-                r=-50;
-                d=-50;
+                if (worldPosition->x<=0 || worldPosition->y<=0) break;
+                puts("loading top left");
+                r=worldPosition->x-1;
+                d=worldPosition->y-1;
                 temporary = mapa->getLocalMap(worldPosition->x-1,worldPosition->y-1);
             break;
             case 1:
-                r=0;
-                d=-50;
+                if (worldPosition->x<=0) break;
+                puts("loading top center");
+                r=worldPosition->x-1;
+                d=worldPosition->y;
                 temporary = mapa->getLocalMap(worldPosition->x-1,worldPosition->y);
             break;
             case 2:
-                r=50;
-                d=-50;
+                if (worldPosition->x<=0 || worldPosition->y>=ConstantValues::mapW-1) break;
+                puts("loading top right");
+                r=worldPosition->x-1;
+                d=worldPosition->y+1;
                 temporary = mapa->getLocalMap(worldPosition->x-1,worldPosition->y+1);
             break;
             case 3:
-                r=-50;
-                d=0;
+                if (worldPosition->y<=0) break;
+                puts("loading center left");
+                r=worldPosition->x;
+                d=worldPosition->y-1;
                 temporary = mapa->getLocalMap(worldPosition->x,worldPosition->y-1);
             break;
             case 4:
-                r=0;
-                d=0;
+                puts("loading center");
+                r=worldPosition->x;
+                d=worldPosition->y;
                 temporary = mapa->getLocalMap(worldPosition->x,worldPosition->y);
             break;
             case 5:
-                r=50;
-                d=0;
+                if (worldPosition->y>=ConstantValues::mapW-1) break;
+                puts("loading center right");
+                r=worldPosition->x;
+                d=worldPosition->y+1;
                 temporary = mapa->getLocalMap(worldPosition->x,worldPosition->y+1);
             break;
             case 6:
-                r=-50;
-                d=50;
+                if (worldPosition->x>=ConstantValues::mapH-1 || worldPosition->y<=0) break;
+                puts("loading bottom left");
+                r=worldPosition->x+1;
+                d=worldPosition->y-1;
                 temporary = mapa->getLocalMap(worldPosition->x+1,worldPosition->y-1);
             break;
             case 7:
-                r=0;
-                d=50;
+                if (worldPosition->x>=ConstantValues::mapH-1) break;
+                puts("loading bottom center");
+                r=worldPosition->x+1;
+                d=worldPosition->y;
                 temporary = mapa->getLocalMap(worldPosition->x+1,worldPosition->y);
             break;
             case 8:
-                r=50;
-                d=50;
+                if (worldPosition->x>=ConstantValues::mapH-1 || worldPosition->y>=ConstantValues::mapW-1) break;
+                puts("loading bottom right");
+                r=worldPosition->x+1;
+                d=worldPosition->y+1;
                 temporary = mapa->getLocalMap(worldPosition->x+1,worldPosition->y+1);
             break;
         }
-        for (int i=0;i<50;i++ ) {
-            for (int j=0;j<50;j++) {
-                addTile(i-localPosition->y+7.4375+r,j-localPosition->x+14+d,false,-1,temporary->getTile(i,j));
+        if (temporary) {
+            for (i=0;i<ConstantValues::localMapSizeH;i++ ) {
+                for (j=0;j<ConstantValues::localMapSizeW;j++) {
+                    addTile(i+ConstantValues::localMapSizeH*d,j+ConstantValues::localMapSizeW*r,false,-1,temporary->getTile(i,j));
+                }
             }
         }
+    }
+
+        puts("\n\n");
+}
+
+void Game::updateCamAndPos() {
+    if (player) {
+        float s=player->getComponent<TransformComponent>().speed;
+        Vector2D v = player->getComponent<TransformComponent>().velocity;
+        localPosition->x+=s*v.x/ConstantValues::localTileW;
+        localPosition->y+=s*v.y/ConstantValues::localTileH;
+        
+        if (localPosition->x>ConstantValues::localMapSizeW)  {
+            if (worldPosition->x<ConstantValues::mapW-1)
+            {
+                worldPosition->x+=1;
+                localPosition->x-=ConstantValues::localMapSizeW;
+                loadLocal();
+            }
+            else localPosition->x=ConstantValues::localMapSizeW;
+        }
+        if (localPosition->y>ConstantValues::localMapSizeH)  {
+            if (worldPosition->y<ConstantValues::mapH-1) {
+                worldPosition->y+=1;
+                localPosition->y-=ConstantValues::localMapSizeH;
+                loadLocal();
+            }
+            else localPosition->y=ConstantValues::localMapSizeW;
+        }
+        if (localPosition->x<0)  {
+            if (worldPosition->x>0) {
+                worldPosition->x-=1;
+                localPosition->x+=ConstantValues::localMapSizeW;
+                loadLocal();
+            }
+            else localPosition->x=0;
+        }
+        if (localPosition->y<0)  {
+            if (worldPosition->y>0) {
+                worldPosition->y-=1;
+                localPosition->y+=ConstantValues::localMapSizeH;
+                loadLocal();
+            }
+            else localPosition->y=0;
+        }
+        camera.x=player->getComponent<TransformComponent>().position.x-ConstantValues::screenSizeW/2;
+        camera.y=player->getComponent<TransformComponent>().position.y-ConstantValues::screenSizeH/2;
+        if (camera.x<0)
+            camera.x=0;
+        if (camera.x>camera.w) 
+            camera.x=camera.w;
+        if (camera.y<0)
+            camera.y=0;
+        if (camera.y>camera.h) 
+            camera.y=camera.h;
     }
 }
 
 void Game::addTile(float x,float y,bool mundo, int mos, std::pair<char,int> type) {
-    int r,d;
+    int r1,r2,d;
     auto& tile(manager.addEntity());
     if (mundo) {
-        r=24;
+        r1=r2=24;
         d=16;
     }
     else {
-        r=64;
+        r1=ConstantValues::localTileW;
+        r2=ConstantValues::localTileH;
         d=32;
     }
-    tile.addComponent<TileComponent>(x,y,d,d,r,r,mundo,mos,type);
+    tile.addComponent<TileComponent>(x,y,d,d,r2,r1,mundo,mos,type);
     if (mundo) 
         tile.addGroup(GroupWorldMap);
     else 
@@ -204,6 +284,7 @@ void Game::handleinput() {
 }
 
 void Game::update() {
+    //printf("Local: (%f,%f)\nWorld: (%f,%f)\n",Game::localPosition->x,Game::localPosition->y,Game::worldPosition->x,Game::worldPosition->y);
     if (statb4!=stat) {
         statb4=stat;
         if (stat==1) {
@@ -212,6 +293,7 @@ void Game::update() {
             menu.addComponent<MenuPositionComponent>(0,0,4);
             menu.addComponent<MenuSpriteComponent>("main-menu");
             menu.addComponent<MenuKeyboardController>();
+            player=NULL;
         }
         else if (stat==2) {
             auto& nPlayer(manager.addEntity());
@@ -223,6 +305,7 @@ void Game::update() {
             nPlayer.getComponent<TransformComponent>().position.x=worldPosition->x*24;
             nPlayer.getComponent<TransformComponent>().position.y=worldPosition->y*24;
             nPlayer.addGroup(GroupPlayers);
+            player = &nPlayer;
         }
         else if (stat==3) {
             if (first==0) initSave("nome");
@@ -232,21 +315,14 @@ void Game::update() {
             oldPlayer.addComponent<SpriteComponent>("hairy-dude");
             oldPlayer.addComponent<KeyboardController>();
             oldPlayer.addGroup(GroupPlayers);
+            player = &oldPlayer;
             loadLocal();
         }
         else if (stat==4) {
         }
     }
+    updateCamAndPos();
     manager.refresh();
     manager.update();
-    //printf("Local: (%f,%f)\nWorld: (%f,%f)\n",Game::localPosition->x,Game::localPosition->y,Game::worldPosition->x,Game::worldPosition->y);
-    if (!manager.getGroup(GroupPlayers).empty()){
-        Vector2D velocity = manager.getGroup(GroupPlayers).front()->getComponent<TransformComponent>().velocity;
-        int speed = manager.getGroup(GroupPlayers).front()->getComponent<TransformComponent>().speed;
-        for (auto& tile : manager.getGroup(GroupLocalMap)) {
-            tile->getComponent<TransformComponent>().position.x-=speed*velocity.x;
-            tile->getComponent<TransformComponent>().position.y-=speed*velocity.y;
-        }
-    }
 }
 
