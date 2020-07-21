@@ -52,7 +52,7 @@ void Game::init(const char* title, int x, int y, int width, int height,bool full
     textures->addTexture("bald-dude","assets/First dude-Sheet.png");
     textures->addTexture("hairy-dude","assets/Male 02-2.png");
     textures->addTexture("beach-tiles","assets/Beach-Sheet.png");
-    textures->addTexture("water-tiles","assets/Desert-Sheet.png");
+    textures->addTexture("water-tiles","assets/Water-Sheet.png");
     textures->addTexture("plains-tiles","assets/Plains-Sheet.png");
     textures->addTexture("desert-tiles","assets/Desert-Sheet.png");
     auto& menu(manager.addEntity());
@@ -187,9 +187,9 @@ void Game::loadLocal() {
 }
 
 void Game::updateCamAndPos() {
-    if (player) {
-        float s=player->getComponent<TransformComponent>().speed;
-        Vector2D v = player->getComponent<TransformComponent>().velocity;
+    float s=player->getComponent<TransformComponent>().speed;
+    Vector2D v = player->getComponent<TransformComponent>().velocity;
+    if (Game::stat==3) {
         localPosition->x+=s*v.x/ConstantValues::localTileW;
         localPosition->y+=s*v.y/ConstantValues::localTileH;
         
@@ -236,6 +236,10 @@ void Game::updateCamAndPos() {
             camera.y=0;
         if (camera.y>camera.h) 
             camera.y=camera.h;
+    }
+    else {
+        worldPosition->x+=(int) s * v.x/24;
+        worldPosition->y+=(int) s * v.y/24;
     }
 }
 
@@ -307,6 +311,10 @@ void Game::update() {
             player=NULL;
         }
         else if (stat==2) {
+            if (first==0) {
+                initSave("nome");
+                first=1;
+            }
             auto& nPlayer(manager.addEntity());
             nPlayer.addComponent<TransformComponent>();
             nPlayer.addComponent<SpriteComponent>("bald-dude");
@@ -319,8 +327,6 @@ void Game::update() {
             player = &nPlayer;
         }
         else if (stat==3) {
-            if (first==0) initSave("nome");
-            first=1;
             auto& oldPlayer(manager.addEntity());
             oldPlayer.addComponent<TransformComponent>();
             oldPlayer.addComponent<SpriteComponent>("hairy-dude");
@@ -332,7 +338,7 @@ void Game::update() {
         else if (stat==4) {
         }
     }
-    updateCamAndPos();
+    if (player) updateCamAndPos();
     manager.refresh();
     manager.update();
 }
