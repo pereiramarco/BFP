@@ -4,8 +4,10 @@
 
 LocalMap::LocalMap() {
     mapa=(std::pair<char,int> **)malloc(sizeof(std::pair<char,int>*)*ConstantValues::localMapSizeW);
+    mancha=(char**)malloc(sizeof(char*)*ConstantValues::localMapSizeW);
     for (int i=0;i<ConstantValues::localMapSizeW;i++) {
         mapa[i]=(std::pair<char,int> *)malloc(sizeof(std::pair<char,int>)*ConstantValues::localMapSizeH);
+        mancha[i]=(char*)malloc(sizeof(char)*ConstantValues::localMapSizeH);
         for (int j=0;j<ConstantValues::localMapSizeH;j++) {
             mapa[i][j].second=-1;
             mapa[i][j].first='.';
@@ -13,15 +15,25 @@ LocalMap::LocalMap() {
     }
 }
 
-LocalMap::LocalMap(SDL_Renderer* rend,std::map<char,SDL_Texture*>text) {
-    ren=rend;
-    textures=text;
+LocalMap::LocalMap(std::string path,std::map<char,SDL_Texture*>text) {
     mapa=(std::pair<char,int> **)malloc(sizeof(std::pair<char,int>*)*ConstantValues::localMapSizeW);
+    mancha=(char**)malloc(sizeof(char*)*ConstantValues::localMapSizeW);
     for (int i=0;i<ConstantValues::localMapSizeW;i++) {
         mapa[i]=(std::pair<char,int> *)malloc(sizeof(std::pair<char,int>)*ConstantValues::localMapSizeH);
+        mancha[i]=(char*)malloc(sizeof(char)*ConstantValues::localMapSizeH);
         for (int j=0;j<ConstantValues::localMapSizeH;j++) {
             mapa[i][j].second=-1;
             mapa[i][j].first='.';
+        }
+    }
+    textures=text;
+    std::ifstream file (path);
+    char valor;
+    for (int i=0;i<ConstantValues::localMapSizeW;i++) {
+        for (int j=0;j<ConstantValues::localMapSizeH;j++) {
+            file.get(valor);
+            mancha[i][j]=valor;
+            file.get(valor);
         }
     }
 }
@@ -34,11 +46,37 @@ void LocalMap::setTile(int i,int j,std::pair<char,int> par) {
     this->mapa[i][j]=par;
 }
 
-void LocalMap::randomizeTile(char type) {
-    int i,j,r;
+void LocalMap::randomizeTile(char type0,char type1,char type2,char type3,char type4) {
+    int i,j,r,l,k;
     for (i=0;i<ConstantValues::localMapSizeW;i++) {
         for (j=0;j<ConstantValues::localMapSizeH;j++) {
-            mapa[i][j].first=type;
+            if (mapa[i][j].first=='.') {
+                switch (mancha[i][j]) {
+                    case '0':
+                        mapa[i][j].first=type0;
+                        break;
+                    case '1':
+                        mapa[i][j].first=type1;
+                        break;
+                    case '2':
+                        mapa[i][j].first=type2;
+                        break;
+                    case '3':
+                        mapa[i][j].first=type3;
+                        break;
+                    case '4':
+                        mapa[i][j].first=type4;
+                        break;
+                }
+            }
+            if (i==25 && j==25 && type0=='f') {
+                for (k=0;k<5;k++) {
+                    for (l=0;l<8;l++) {
+                        mapa[i+k][j+l].second=k*7 + l;
+                        mapa[i+k][j+l].first=type0;
+                    }
+                }
+            }
             if (mapa[i][j].second==-1) {
                 if (i!=ConstantValues::localMapSizeW-1 && j!=ConstantValues::localMapSizeH-1 && mapa[i][j+1].second==-1 && mapa[i+1][j+1].second==-1) r=rand()%101;
                 else r=rand()%100;
@@ -47,6 +85,7 @@ void LocalMap::randomizeTile(char type) {
                     mapa[i+1][j].second=4;
                     mapa[i][j+1].second=7;
                     mapa[i+1][j+1].second=5;
+                    mapa[i+1][j+1].first=mapa[i+1][j].first=mapa[i][j+1].first=mapa[i][j].first;
                 }
                 else if (r>=98)
                     mapa[i][j].second=2;

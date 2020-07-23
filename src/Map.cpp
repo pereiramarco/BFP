@@ -11,7 +11,7 @@ Mapa::Mapa(SDL_Renderer * ren,int h,int w) {
         worldMap[i]=(int*)malloc(sizeof(int)*width);
         mapa[i]=(LocalMap**)malloc(sizeof(LocalMap*)*width);
         for (int j=0;j<width;j++) {
-            mapa[i][j] = new LocalMap(this->renderer,this->mapOfTexs);
+            mapa[i][j] = new LocalMap("assets/mancha",this->mapOfTexs);
         }
     }
     randomizeMap(70);
@@ -137,10 +137,19 @@ void Mapa::randomizeMap(int fP) {
 }
 
 void Mapa::randomizeLocalMaps() {
-    int i,j;
+    int i,j,esq,cima,dir,baixo;
     for (i=0;i<height;i++) {
         for (j=0;j<width;j++) {
-            mapa[i][j]->randomizeTile(worldMap[i][j]+'a');
+            cima=baixo=esq=dir=worldMap[i][j];
+            if (i)
+                cima=worldMap[i-1][j];
+            if (i<height-1)
+                baixo=worldMap[i+1][j];
+            if (j)
+                esq=worldMap[i][j-1];
+            if (j<width-1)
+                dir=worldMap[i][j+1];
+            mapa[i][j]->randomizeTile(worldMap[i][j]+'a',cima+'a',dir+'a',baixo+'a',esq+'a');
         }
     }
 }

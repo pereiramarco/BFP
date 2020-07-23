@@ -55,6 +55,7 @@ void Game::init(const char* title, int x, int y, int width, int height,bool full
     textures->addTexture("water-tiles","assets/Water-Sheet.png");
     textures->addTexture("plains-tiles","assets/Plains-Sheet.png");
     textures->addTexture("desert-tiles","assets/Desert-Sheet.png");
+    textures->addTexture("dungeon-tiles","assets/Dungeon-Sheet.png");
     auto& menu(manager.addEntity());
     menu.addGroup(GroupMenus);
     menu.addComponent<MenuPositionComponent>(0,0,4);

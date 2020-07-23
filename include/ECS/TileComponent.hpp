@@ -46,8 +46,8 @@ class TileComponent : public Component {
                 case 'b':
                     path="plains-tiles";
                     break;
-                case 'd':
-                    path="desert-tiles";
+                case 'f':
+                    path="dungeon-tiles";
                     break;
                 default:
                     break;
