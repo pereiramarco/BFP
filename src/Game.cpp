@@ -97,7 +97,6 @@ void Game::loadLocal() {
     manager.delGroup(GroupLocalMap);
     int r,d,i,ii,j,jj,maxI,maxJ;
     LocalMap *temporary;
-    //printf("WorldPosition:\nX = %f\nY = %f\n",worldPosition->x,worldPosition->y);
     for (int k=0;k<9;k++) {
         ii=0;jj=0;maxI=ConstantValues::localMapSizeH;maxJ=ConstantValues::localMapSizeW;
         temporary=NULL;
@@ -195,7 +194,7 @@ void Game::updateCamAndPos() {
         localPosition->y+=s*v.y/ConstantValues::localTileH;
         
         if (localPosition->x>ConstantValues::localMapSizeW)  {
-            if (worldPosition->x<ConstantValues::mapW-1)
+            if (worldPosition->x<ConstantValues::mapH-1)
             {
                 worldPosition->x+=1;
                 localPosition->x-=ConstantValues::localMapSizeW;
@@ -204,7 +203,7 @@ void Game::updateCamAndPos() {
             else localPosition->x=ConstantValues::localMapSizeW;
         }
         if (localPosition->y>ConstantValues::localMapSizeH)  {
-            if (worldPosition->y<ConstantValues::mapH-1) {
+            if (worldPosition->y<ConstantValues::mapW-1) {
                 worldPosition->y+=1;
                 localPosition->y-=ConstantValues::localMapSizeH;
                 loadLocal();
@@ -312,6 +311,7 @@ void Game::update() {
             player=NULL;
         }
         else if (stat==2) {
+            Game::camera={0,0,ConstantValues::mapH*ConstantValues::worldTileH,ConstantValues::mapW*ConstantValues::worldTileW};
             if (first==0) {
                 initSave("nome");
                 first=1;
@@ -324,14 +324,20 @@ void Game::update() {
             nPlayer.getComponent<SpriteComponent>().setDest(r);
             nPlayer.getComponent<TransformComponent>().position.x=worldPosition->x*24;
             nPlayer.getComponent<TransformComponent>().position.y=worldPosition->y*24;
+            nPlayer.getComponent<TransformComponent>().speed=8;
             nPlayer.addGroup(GroupPlayers);
             player = &nPlayer;
         }
         else if (stat==3) {
+            camera = {0,0,ConstantValues::mapH*ConstantValues::localMapSizeH*ConstantValues::localTileH,ConstantValues::mapW*ConstantValues::localMapSizeW*ConstantValues::localTileW};
+            localPosition=new Vector2D(ConstantValues::playerLocalPosX-1,ConstantValues::playerLocalPosY-1);
+            //printf("WorldPosition x: %f y:%f\nLocalPosition x: %f y:%f\nCamera x:%d y:%d\n",worldPosition->x,worldPosition->y,Game::localPosition->x,Game::localPosition->y,camera.x,camera.y);
             auto& oldPlayer(manager.addEntity());
             oldPlayer.addComponent<TransformComponent>();
             oldPlayer.addComponent<SpriteComponent>("hairy-dude");
             oldPlayer.addComponent<KeyboardController>();
+            oldPlayer.getComponent<TransformComponent>().position.x=((int)worldPosition->x)*50*64+ConstantValues::screenSizeW/2;
+            oldPlayer.getComponent<TransformComponent>().position.y=((int)worldPosition->y)*50*64+ConstantValues::screenSizeH/2;
             oldPlayer.addGroup(GroupPlayers);
             player = &oldPlayer;
             loadLocal();

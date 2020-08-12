@@ -63,6 +63,7 @@ class TileComponent : public Component {
         pos->position.y=dest.y;
         sprite->setSrc(src);
         sprite->setDest(dest);
+        if (world) sprite->setUpdt(false);
     }
 
     void update() override {
@@ -71,8 +72,10 @@ class TileComponent : public Component {
         }
         else {
             sprite->setDraw((Game::stat==2) == world);
-            dest.x=position.x-Game::camera.x;
-            dest.y=position.y-Game::camera.y;
+            if (!world) {
+                dest.x=position.x-Game::camera.x;
+                dest.y=position.y-Game::camera.y;
+            }
         }
     }
 };
