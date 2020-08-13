@@ -13,8 +13,7 @@ Vector2D * Game::localPosition;
 int Game::stat=0;
 int Game::statb4=0;
 static int first=0;
-static int loaded=0;
-SDL_Rect Game::camera = {0,0,ConstantValues::mapH*ConstantValues::localMapSizeH*ConstantValues::localTileH,ConstantValues::mapW*ConstantValues::localMapSizeW*ConstantValues::localTileW};
+SDL_Rect Game::camera = {0,0,(ConstantValues::mapW-1)*ConstantValues::localMapSizeW*ConstantValues::localTileW,(ConstantValues::mapH-1)*ConstantValues::localMapSizeH*ConstantValues::localTileH};
 
 enum groupLabels : std::size_t {
     GroupWorldMap,
@@ -119,7 +118,7 @@ void Game::loadLocal() {
                 temporary = mapa->getLocalMap(worldPosition->x-1,worldPosition->y);
             break;
             case 2:
-                if (worldPosition->x<=0 || worldPosition->y>=ConstantValues::mapW-1) break;
+                if (worldPosition->x<=0 || worldPosition->y>=ConstantValues::mapH-1) break;
                 //puts("loading top right");
                 maxI=16;
                 jj=35;
@@ -142,7 +141,7 @@ void Game::loadLocal() {
                 temporary = mapa->getLocalMap(worldPosition->x,worldPosition->y);
             break;
             case 5:
-                if (worldPosition->y>=ConstantValues::mapW-1) break;
+                if (worldPosition->y>=ConstantValues::mapH-1) break;
                 //puts("loading center right");
                 maxI=15;
                 r=worldPosition->x;
@@ -150,7 +149,7 @@ void Game::loadLocal() {
                 temporary = mapa->getLocalMap(worldPosition->x,worldPosition->y+1);
             break;
             case 6:
-                if (worldPosition->x>=ConstantValues::mapH-1 || worldPosition->y<=0) break;
+                if (worldPosition->x>=ConstantValues::mapW-1 || worldPosition->y<=0) break;
                 //puts("loading bottom left");
                 ii=35;
                 maxJ=16;
@@ -159,7 +158,7 @@ void Game::loadLocal() {
                 temporary = mapa->getLocalMap(worldPosition->x+1,worldPosition->y-1);
             break;
             case 7:
-                if (worldPosition->x>=ConstantValues::mapH-1) break;
+                if (worldPosition->x>=ConstantValues::mapW-1) break;
                 //puts("loading bottom center");
                 maxJ=16;
                 r=worldPosition->x+1;
@@ -167,7 +166,7 @@ void Game::loadLocal() {
                 temporary = mapa->getLocalMap(worldPosition->x+1,worldPosition->y);
             break;
             case 8:
-                if (worldPosition->x>=ConstantValues::mapH-1 || worldPosition->y>=ConstantValues::mapW-1) break;
+                if (worldPosition->x>=ConstantValues::mapW-1 || worldPosition->y>=ConstantValues::mapH-1) break;
                 //puts("loading bottom right");
                 maxI=15;
                 maxJ=16;
@@ -194,7 +193,7 @@ void Game::updateCamAndPos() {
         localPosition->y+=s*v.y/ConstantValues::localTileH;
         
         if (localPosition->x>ConstantValues::localMapSizeW)  {
-            if (worldPosition->x<ConstantValues::mapH-1)
+            if (worldPosition->x<ConstantValues::mapW-1)
             {
                 worldPosition->x+=1;
                 localPosition->x-=ConstantValues::localMapSizeW;
@@ -203,7 +202,7 @@ void Game::updateCamAndPos() {
             else localPosition->x=ConstantValues::localMapSizeW;
         }
         if (localPosition->y>ConstantValues::localMapSizeH)  {
-            if (worldPosition->y<ConstantValues::mapW-1) {
+            if (worldPosition->y<ConstantValues::mapH-1) {
                 worldPosition->y+=1;
                 localPosition->y-=ConstantValues::localMapSizeH;
                 loadLocal();
@@ -311,7 +310,7 @@ void Game::update() {
             player=NULL;
         }
         else if (stat==2) {
-            Game::camera={0,0,ConstantValues::mapH*ConstantValues::worldTileH,ConstantValues::mapW*ConstantValues::worldTileW};
+            Game::camera={0,0,(ConstantValues::mapH-1)*ConstantValues::worldTileH,(ConstantValues::mapW-1)*ConstantValues::worldTileW};
             if (first==0) {
                 initSave("nome");
                 first=1;
@@ -329,7 +328,7 @@ void Game::update() {
             player = &nPlayer;
         }
         else if (stat==3) {
-            camera = {0,0,ConstantValues::mapH*ConstantValues::localMapSizeH*ConstantValues::localTileH,ConstantValues::mapW*ConstantValues::localMapSizeW*ConstantValues::localTileW};
+            camera = {0,0,(ConstantValues::mapW-1)*ConstantValues::localMapSizeW*ConstantValues::localTileW,(ConstantValues::mapH-1)*ConstantValues::localMapSizeH*ConstantValues::localTileH};
             localPosition=new Vector2D(ConstantValues::playerLocalPosX-1,ConstantValues::playerLocalPosY-1);
             //printf("WorldPosition x: %f y:%f\nLocalPosition x: %f y:%f\nCamera x:%d y:%d\n",worldPosition->x,worldPosition->y,Game::localPosition->x,Game::localPosition->y,camera.x,camera.y);
             auto& oldPlayer(manager.addEntity());

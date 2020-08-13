@@ -13,7 +13,6 @@ private:
 	SDL_Texture *texture;
 	SDL_Rect srcRect, destRect;
 	bool drawb;
-	bool updateb;
 
 public:
 
@@ -51,10 +50,6 @@ public:
 		drawb=t;
 	}
 
-	void setUpdt(bool f) {
-		updateb=f;
-	}
-
 	void init() override {
 		transform=&entity->getComponent<TransformComponent>();
 		srcRect.x = srcRect.y = destRect.x = destRect.y = 0;
@@ -63,12 +58,10 @@ public:
 		destRect.w = ConstantValues::localTileW;
 		destRect.h = ConstantValues::localTileH;
 		drawb=true;
-		updateb=true;
 	}
 
 	void update() override
 	{
-		if (!updateb) return;
 		destRect.x = static_cast<int> (transform->position.x - Game::camera.x);
 		destRect.y = static_cast<int> (transform->position.y - Game::camera.y);
 	}
