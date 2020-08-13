@@ -24,6 +24,7 @@ public:
     void update();
     void updateCamAndPos();
     void loadLocal();
+    void updateCollisions();
 
     static void addTile(float x,float y,bool mundo, int tile, std::pair<char,int> type);
     static int statb4;

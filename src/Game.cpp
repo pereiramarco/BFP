@@ -1,6 +1,7 @@
 #include "../include/Game.hpp"
 #include "../include/ECS/Components.hpp"
 #include "../include/ConstantValues.hpp"
+#include "../include/Collision.hpp"
 
 SDL_Renderer* Game::renderer = nullptr;
 Entity* player = nullptr;
@@ -13,6 +14,7 @@ Vector2D * Game::localPosition;
 int Game::stat=0;
 int Game::statb4=0;
 static int first=0;
+int order=0;
 SDL_Rect Game::camera = {0,0,(ConstantValues::mapW-1)*ConstantValues::localMapSizeW*ConstantValues::localTileW,(ConstantValues::mapH-1)*ConstantValues::localMapSizeH*ConstantValues::localTileH};
 
 enum groupLabels : std::size_t {
@@ -20,7 +22,8 @@ enum groupLabels : std::size_t {
     GroupLocalMap,
     GroupPlayers,
     GroupEnemies,
-    GroupMenus
+    GroupMenus,
+    GroupCollider
 };
 
 Game::Game() {
@@ -94,6 +97,7 @@ void Game::initSave(std::string savename) {
 
 void Game::loadLocal() {
     manager.delGroup(GroupLocalMap);
+    manager.delGroup(GroupCollider);
     int r,d,i,ii,j,jj,maxI,maxJ;
     LocalMap *temporary;
     for (int k=0;k<9;k++) {
@@ -246,13 +250,41 @@ void Game::addTile(float x,float y,bool mundo, int mos, std::pair<char,int> type
     int r1,r2,d;
     auto& tile(manager.addEntity());
     if (mundo) {
-        r1=r2=24;
-        d=16;
+        r1=ConstantValues::worldTileH;
+        r2=ConstantValues::worldTileW;
+        d=16; //size inside sprite sheet
     }
     else {
         r1=ConstantValues::localTileW;
         r2=ConstantValues::localTileH;
-        d=32;
+        d=32;//size inside sprite sheet
+        if (type.second>1) {
+            auto& tileO(manager.addEntity());
+            tileO.addComponent<TileComponent>(x,y,d,d,r2,r1,mundo,mos,type);
+            switch (type.second) {
+                case 2:
+                case 3:
+                    tileO.addComponent<ColliderComponent>(0,0,64,64,"small object");
+                    tileO.addGroup(GroupCollider);
+                    type.second=1;
+                    break;
+                case 4:
+                    tileO.addComponent<ColliderComponent>(40,40,24,24,"tree");
+                    tileO.addGroup(GroupCollider);
+                    type.second=0;
+                    break;
+                case 5:
+                    tileO.addComponent<ColliderComponent>(0,40,24,24,"tree");
+                    tileO.addGroup(GroupCollider);
+                    type.second=1;
+                    break;
+                case 6:
+                case 7:
+                    tileO.addGroup(GroupCollider);
+                    type.second=0;
+                    break;
+                }
+        }
     }
     tile.addComponent<TileComponent>(x,y,d,d,r2,r1,mundo,mos,type);
     if (mundo) 
@@ -261,12 +293,28 @@ void Game::addTile(float x,float y,bool mundo, int mos, std::pair<char,int> type
         tile.addGroup(GroupLocalMap);
 }
 
+void Game::updateCollisions() {
+    int shouldOverlap=0;
+    auto colliders = manager.getGroup(GroupCollider);
+    for (auto& i : colliders) {
+        if (!i->hasComponent<ColliderComponent>()) continue;
+        if (Collision::AABB(player->getComponent<ColliderComponent>().getRect(),i->getComponent<ColliderComponent>().getRect())) {
+            player->getComponent<TransformComponent>().velocity*-1;
+        }
+        if (Collision::AABB(player->getComponent<OverlapComponent>().getRect(),i->getComponent<ColliderComponent>().getRect())) {
+            shouldOverlap=1;
+        }
+    }
+    order=shouldOverlap;
+}
+
 void Game::render() {
     auto tilesWorld = manager.getGroup(GroupWorldMap);
     auto tilesLocal = manager.getGroup(GroupLocalMap);
     auto players = manager.getGroup(GroupPlayers);
     auto enemies = manager.getGroup(GroupEnemies);
     auto menus = manager.getGroup(GroupMenus);
+    auto colliders = manager.getGroup(GroupCollider);
     SDL_RenderClear(renderer);
     for (auto& i : menus) {
         i->draw();
@@ -277,11 +325,21 @@ void Game::render() {
     for (auto& i : tilesLocal) {
         i->draw();
     }
-    for (auto& i : players) {
-        i->draw();
-    }
     for (auto& i : enemies) {
         i->draw();
+    }
+    if (!order) {
+        for (auto& i : players) {
+            i->draw();
+        }
+    }
+    for (auto&i : colliders) {
+        i->draw();
+    }
+    if (order) {
+        for (auto& i : players) {
+            i->draw();
+        }
     }
     SDL_RenderPresent(renderer);
 }
@@ -335,6 +393,8 @@ void Game::update() {
             oldPlayer.addComponent<TransformComponent>();
             oldPlayer.addComponent<SpriteComponent>("hairy-dude");
             oldPlayer.addComponent<KeyboardController>();
+            oldPlayer.addComponent<OverlapComponent>(64,50);
+            oldPlayer.addComponent<ColliderComponent>(17,50,30,14,"player");
             oldPlayer.getComponent<TransformComponent>().position.x=((int)worldPosition->x)*50*64+ConstantValues::screenSizeW/2;
             oldPlayer.getComponent<TransformComponent>().position.y=((int)worldPosition->y)*50*64+ConstantValues::screenSizeH/2;
             oldPlayer.addGroup(GroupPlayers);
@@ -347,5 +407,7 @@ void Game::update() {
     if (player) updateCamAndPos();
     manager.refresh();
     manager.update();
+    if (stat==3)
+        updateCollisions();
 }
 

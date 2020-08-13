@@ -8,3 +8,5 @@
 #include "SpriteComponent.hpp"
 #include "MenuPositionComponent.hpp"
 #include "TileComponent.hpp"
+#include "ColliderComponent.hpp"
+#include "OverlapComponent.hpp"

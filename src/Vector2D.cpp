@@ -70,3 +70,10 @@ Vector2D& Vector2D::operator*=(const Vector2D& v1) {
 Vector2D& Vector2D::operator/=(const Vector2D& v1) {
     return this->divide(v1);
 }
+
+Vector2D& Vector2D::operator*(const int& r) {
+    this->x*=r;
+    this->y*=r;
+
+    return *this;
+}

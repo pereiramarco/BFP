@@ -22,4 +22,6 @@ public :
     Vector2D& operator-=(const Vector2D& v1);
     Vector2D& operator*=(const Vector2D& v1);
     Vector2D& operator/=(const Vector2D& v1);
+
+    Vector2D& operator*(const int& r);
 };
