@@ -24,7 +24,7 @@ public:
     void update();
     void updateCamAndPos();
     void loadLocal();
-    void updateCollisions();
+    void updateCollisions(Vector2D playerpos,Vector2D localPos,Vector2D worldPos);
 
     static void addTile(float x,float y,bool mundo, int tile, std::pair<char,int> type);
     static int statb4;

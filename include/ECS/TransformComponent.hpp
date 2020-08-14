@@ -14,7 +14,7 @@ public:
         position.y= ConstantValues::screenSizeH/2;
         velocity.x=0;
         velocity.y=0;
-        speed=10;
+        speed=20;
     }
 
     void update() override {

@@ -293,16 +293,21 @@ void Game::addTile(float x,float y,bool mundo, int mos, std::pair<char,int> type
         tile.addGroup(GroupLocalMap);
 }
 
-void Game::updateCollisions() {
+void Game::updateCollisions(Vector2D playerpos,Vector2D localPos,Vector2D worldPos) {
     int shouldOverlap=0;
     auto colliders = manager.getGroup(GroupCollider);
     for (auto& i : colliders) {
         if (!i->hasComponent<ColliderComponent>()) continue;
-        if (Collision::AABB(player->getComponent<ColliderComponent>().getRect(),i->getComponent<ColliderComponent>().getRect())) {
-            player->getComponent<TransformComponent>().velocity*-1;
-        }
         if (Collision::AABB(player->getComponent<OverlapComponent>().getRect(),i->getComponent<ColliderComponent>().getRect())) {
             shouldOverlap=1;
+        }
+        if (Collision::AABB(player->getComponent<ColliderComponent>().getRect(),i->getComponent<ColliderComponent>().getRect())) {
+            localPosition->x = localPos.x;
+            localPosition->y = localPos.y;
+            worldPosition->x = worldPos.x;
+            worldPosition->y= worldPos.y;
+            player->getComponent<TransformComponent>().position=playerpos;
+            break;
         }
     }
     order=shouldOverlap;
@@ -404,10 +409,20 @@ void Game::update() {
         else if (stat==4) {
         }
     }
-    if (player) updateCamAndPos();
+    Vector2D playerpos={0,0};
+    Vector2D localPos={0,0};
+    Vector2D worldPos={0,0};
+    if (player) {
+        playerpos = player->getComponent<TransformComponent>().position;
+        localPos.x = localPosition->x;
+        localPos.y = localPosition->y;
+        worldPos.x = worldPosition->x;
+        worldPos.y = worldPosition->y;
+        updateCamAndPos();
+    }
     manager.refresh();
     manager.update();
-    if (stat==3)
-        updateCollisions();
+    if (stat==3 && player)
+        updateCollisions(playerpos,localPos,worldPos);
 }
 
