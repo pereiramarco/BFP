@@ -69,14 +69,16 @@ void LocalMap::randomizeTile(char type0,char type1,char type2,char type3,char ty
                         break;
                 }
             }
-            if (i==25 && j==25 && type0=='f') {
+            if (i==22 && j==22 && type0=='f') {
                 for (k=0;k<5;k++) {
-                    for (l=0;l<8;l++) {
-                        mapa[i+k][j+l].second=k*7 + l;
-                        mapa[i+k][j+l].first=type0;
+                    for (l=0;l<7;l++) {
+                        mapa[i+k][j+l].second=8+k*7 + l;
                     }
                 }
+
             }
+            if (type0=='f' || type1=='f' || type2=='f' || type3=='f' || type4=='f') 
+                mapa[i][j].first='b';
             if (mapa[i][j].second==-1) {
                 if (i!=ConstantValues::localMapSizeW-1 && j!=ConstantValues::localMapSizeH-1 && mapa[i][j+1].second==-1 && mapa[i+1][j+1].second==-1) r=rand()%101;
                 else r=rand()%100;

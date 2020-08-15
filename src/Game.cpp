@@ -51,7 +51,7 @@ void Game::init(const char* title, int x, int y, int width, int height,bool full
     textures=new AssetManager(&manager);
     textures->addTexture("main-menu","assets/Main-Menu-Sheet.png");
     textures->addTexture("world-tiles","assets/Tiles-Sheet.png");
-    textures->addTexture("bald-dude","assets/First dude-Sheet.png");
+    textures->addTexture("square","assets/Portrait.png");
     textures->addTexture("hairy-dude","assets/Male 02-2.png");
     textures->addTexture("beach-tiles","assets/Beach-Sheet.png");
     textures->addTexture("water-tiles","assets/Water-Sheet.png");
@@ -262,6 +262,9 @@ void Game::addTile(float x,float y,bool mundo, int mos, std::pair<char,int> type
             auto& tileO(manager.addEntity());
             tileO.addComponent<TileComponent>(x,y,d,d,r2,r1,mundo,mos,type);
             switch (type.second) {
+                case 38:
+                case 39:
+                case 40:
                 case 2:
                 case 3:
                     tileO.addComponent<ColliderComponent>(0,0,64,64,"small object");
@@ -278,8 +281,7 @@ void Game::addTile(float x,float y,bool mundo, int mos, std::pair<char,int> type
                     tileO.addGroup(GroupCollider);
                     type.second=1;
                     break;
-                case 6:
-                case 7:
+                default:
                     tileO.addGroup(GroupCollider);
                     type.second=0;
                     break;
@@ -380,7 +382,7 @@ void Game::update() {
             }
             auto& nPlayer(manager.addEntity());
             nPlayer.addComponent<TransformComponent>();
-            nPlayer.addComponent<SpriteComponent>("bald-dude");
+            nPlayer.addComponent<SpriteComponent>("square");
             nPlayer.addComponent<KeyboardController>();
             SDL_Rect r; r.w=24;r.h=24; 
             nPlayer.getComponent<SpriteComponent>().setDest(r);
