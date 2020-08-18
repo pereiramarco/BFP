@@ -7,7 +7,7 @@ class TransformComponent : public Component {
 public:
     Vector2D position;
     Vector2D velocity;
-    int speed;
+    float speed;
 
     TransformComponent() {
         position.x= ConstantValues::screenSizeW/2;

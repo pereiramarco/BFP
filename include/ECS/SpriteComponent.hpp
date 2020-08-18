@@ -13,6 +13,7 @@ private:
 	SDL_Texture *texture;
 	SDL_Rect srcRect, destRect;
 	bool drawb;
+	int skip;
 
 public:
 
@@ -21,6 +22,7 @@ public:
 	SpriteComponent(std::string text) {
 		this->texture=Game::textures->getTexture(text);
 		drawb=true;
+		skip=1;
 	}
 
 	void setSrc(SDL_Rect r) {
@@ -50,6 +52,18 @@ public:
 		drawb=t;
 	}
 
+	void setSkip(int x) {
+		skip=x;
+	}
+
+	int getDestx() {
+		return destRect.x;
+	}
+
+	int getDesty() {
+		return destRect.y;
+	}
+
 	void init() override {
 		transform=&entity->getComponent<TransformComponent>();
 		srcRect.x = srcRect.y = destRect.x = destRect.y = 0;
@@ -57,13 +71,12 @@ public:
 		srcRect.h = 32;
 		destRect.w = ConstantValues::localTileW;
 		destRect.h = ConstantValues::localTileH;
-		drawb=true;
 	}
 
 	void update() override
 	{
-		destRect.x = static_cast<int> (transform->position.x - Game::camera.x);
-		destRect.y = static_cast<int> (transform->position.y - Game::camera.y);
+		destRect.x = skip*static_cast<int> (transform->position.x - Game::camera.x);
+		destRect.y = skip*static_cast<int> (transform->position.y - Game::camera.y);
 	}
 
 	void draw() override

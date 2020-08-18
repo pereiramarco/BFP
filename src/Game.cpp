@@ -241,8 +241,8 @@ void Game::updateCamAndPos() {
             camera.y=camera.h;
     }
     else {
-        worldPosition->x+=(int) s * v.x/24;
-        worldPosition->y+=(int) s * v.y/24;
+        worldPosition->x=player->getComponent<SpriteComponent>().getDestx()/24;
+        worldPosition->y=player->getComponent<SpriteComponent>().getDesty()/24;
     }
 }
 
@@ -386,9 +386,10 @@ void Game::update() {
             nPlayer.addComponent<KeyboardController>();
             SDL_Rect r; r.w=24;r.h=24; 
             nPlayer.getComponent<SpriteComponent>().setDest(r);
-            nPlayer.getComponent<TransformComponent>().position.x=worldPosition->x*24;
-            nPlayer.getComponent<TransformComponent>().position.y=worldPosition->y*24;
-            nPlayer.getComponent<TransformComponent>().speed=8;
+            nPlayer.getComponent<SpriteComponent>().setSkip(24);
+            nPlayer.getComponent<TransformComponent>().position.x=worldPosition->x;
+            nPlayer.getComponent<TransformComponent>().position.y=worldPosition->y;
+            nPlayer.getComponent<TransformComponent>().speed=0.25;
             nPlayer.addGroup(GroupPlayers);
             player = &nPlayer;
         }

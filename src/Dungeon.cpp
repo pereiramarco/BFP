@@ -101,6 +101,13 @@ void Dungeon::findPath(int to) {
     }
 }
 
+void Dungeon::hallClose(int i,int j) {
+    if (j>1 && matrix[i][j-1]==-20 && matrix[i][j-2]>13) matrix[i][j-1]=2;
+    if (i>1 && matrix[i-1][j]==-20 && matrix[i-2][j]>13) matrix[i-1][j]=2;
+    if (j<width-2 && matrix[i][j+1]==-20 && matrix[i][j+2]>13) matrix[i][j+1]=2;
+    if (i<height-2 && matrix[i+1][j]==-20 && matrix[i+2][j]>13) matrix[i+1][j]=2;
+}
+
 void Dungeon::fixHalls() {
     int i,j;
     bool up,down,right,left;
@@ -138,9 +145,9 @@ void Dungeon::doubleMap() {
 //height max 8 min 6
 
 void Dungeon::randomizeRooms() {
-    int r=1,p=0;
+    int r=1,p=0,i,j,k;
     srand(time(NULL));
-    for (int i=14;i<14+roomNumber;r=1,p=0,i++) {//deixei o 2 pra room final
+    for (i=14;i<14+roomNumber;r=1,p=0,i++) {//deixei o 2 pra room final
         while (r && p<15) {
             p++;
             r=0;
@@ -148,8 +155,8 @@ void Dungeon::randomizeRooms() {
             int rh=rand()%(4-3+1)+3;
             int rx=rand()%(width-rw+1);
             int ry=rand()%(height-rh+1);
-            for (int j=-1;j<=rh && r==0;j++) {
-                for (int k=-1;k<=rw && r==0;k++) {
+            for (j=-1;j<=rh && r==0;j++) {
+                for (k=-1;k<=rw && r==0;k++) {
                     if (j+ry<0 || j+ry>=height || k+rx<0 || k+rx>=width)
                         continue;
                     if (matrix[j+ry][k+rx]!=-20) {
@@ -159,8 +166,8 @@ void Dungeon::randomizeRooms() {
                 }
             }
             if (r) continue;
-            for (int j=0;j<rh && r==0;j++) {
-                for (int k=0;k<rw && r==0;k++) {
+            for (j=0;j<rh && r==0;j++) {
+                for (k=0;k<rw && r==0;k++) {
                     matrix[j+ry][k+rx]=i;
                 }
             }
@@ -173,6 +180,12 @@ void Dungeon::randomizeRooms() {
         if (r) {
             i--;
             roomNumber-=1;
+        }
+    }
+    for (i=0;i<height;i++) {
+        for (j=0;j<width;j++) {
+            if (matrix[i][j]>13)
+                hallClose(i,j);
         }
     }
     fixHalls();
@@ -270,70 +283,70 @@ void Dungeon::polishRoom(int y,int x,int num) {
 void Dungeon::polishHall(int i,int j) {
     switch (map[i][j]) {
         case 3:
-            map[i][j]=10;
-            map[i][j+1]=11;
-            map[i+1][j]=12;
-            map[i+1][j+1]=13;
+            map[i][j]=-12;
+            map[i][j+1]=-13;
+            map[i+1][j]=-10;
+            map[i+1][j+1]=-11;
         break;
         case 4:
-            map[i][j]=7;
-            map[i][j+1]=4;
-            map[i+1][j]=7;
-            map[i+1][j+1]=4;
+            map[i][j]=-7;
+            map[i][j+1]=-4;
+            map[i+1][j]=-7;
+            map[i+1][j+1]=-4;
         break;
         case 5:
-            map[i][j]=2;
-            map[i][j+1]=2;
-            map[i+1][j]=8;
-            map[i+1][j+1]=8;
+            map[i][j]=-2;
+            map[i][j+1]=-2;
+            map[i+1][j]=-8;
+            map[i+1][j+1]=-8;
         break;
         case 6:
-            map[i][j]=10;
-            map[i][j+1]=4;
-            map[i+1][j]=8;
-            map[i+1][j+1]=10;
+            map[i][j]=-12;
+            map[i][j+1]=-4;
+            map[i+1][j]=-8;
+            map[i+1][j+1]=-12;
         break;
         case 7:
-            map[i][j]=2;
-            map[i][j+1]=12;
-            map[i+1][j]=12;
-            map[i+1][j+1]=4;
+            map[i][j]=-2;
+            map[i][j+1]=-10;
+            map[i+1][j]=-10;
+            map[i+1][j+1]=-4;
         break;
         case 8:
-            map[i][j]=13;
-            map[i][j+1]=2;
-            map[i+1][j]=7;
-            map[i+1][j+1]=13;
+            map[i][j]=-11;
+            map[i][j+1]=-2;
+            map[i+1][j]=-7;
+            map[i+1][j+1]=-11;
         break;
         case 9:
-            map[i][j]=7;
-            map[i][j+1]=11;
-            map[i+1][j]=11;
-            map[i+1][j+1]=8;
+            map[i][j]=-7;
+            map[i][j+1]=-13;
+            map[i+1][j]=-13;
+            map[i+1][j+1]=-8;
         break;
         case 10:
-            map[i][j]=10;
-            map[i][j+1]=11;
-            map[i+1][j]=8;
-            map[i+1][j+1]=8;
+            map[i][j]=-12;
+            map[i][j+1]=-13;
+            map[i+1][j]=-8;
+            map[i+1][j+1]=-8;
         break;
         case 11:
-            map[i][j]=7;
-            map[i][j+1]=11;
-            map[i+1][j]=7;
-            map[i+1][j+1]=13;
+            map[i][j]=-7;
+            map[i][j+1]=-13;
+            map[i+1][j]=-7;
+            map[i+1][j+1]=-11;
         break;
         case 12:
-            map[i][j]=2;
-            map[i][j+1]=2;
-            map[i+1][j]=12;
-            map[i+1][j+1]=13;
+            map[i][j]=-2;
+            map[i][j+1]=-2;
+            map[i+1][j]=-10;
+            map[i+1][j+1]=-11;
         break;
         case 13:
-            map[i][j]=10;
-            map[i][j+1]=4;
-            map[i+1][j]=12;
-            map[i+1][j+1]=4;
+            map[i][j]=-12;
+            map[i][j+1]=-4;
+            map[i+1][j]=-10;
+            map[i+1][j+1]=-4;
         break;
     }
 }
@@ -347,16 +360,6 @@ void Dungeon::polishDungeon() {
             }
         }
     }
-    for (i=0;i<height*2;i++) {
-        for (j=0;j<width*2;j++) {
-            if (!map[i][j] || map[i][j]==-20) printf("  ");
-            else if (map[i][j]<-9) printf("%c ",map[i][j]*-1+55);
-            else if (map[i][j]>9) printf("%c ",map[i][j]+55);
-            else if (map[i][j]<0) printf("%d ",map[i][j]*-1);
-            else printf("%d ",map[i][j]);
-        }
-        puts("");
-    }
     for (i=0;i<height*2;i+=2) {
         for (j=0;j<width*2;j+=2) {
             polishHall(i,j);
@@ -367,7 +370,6 @@ void Dungeon::polishDungeon() {
         for (j=0;j<width*2;j++) {
             if (!map[i][j] || map[i][j]==-20) printf("  ");
             else if (map[i][j]<-9) printf("%c ",map[i][j]*-1+55);
-            else if (map[i][j]>9) printf("%c ",map[i][j]+55);
             else if (map[i][j]<0) printf("%d ",map[i][j]*-1);
             else printf("%d ",map[i][j]);
         }
@@ -380,9 +382,11 @@ void Dungeon::randomizeDungeon() {
 }
 
 int main() {
-    Dungeon* d = new Dungeon(100,60,30);// must be divisible by 2
-    d->randomizeRooms();
-    d->polishDungeon();
-    int r=d->roomNumber;
-    printf("Number of Rooms: %d\n",r+1);
+    for (int i=0;i<1;i++) {
+        Dungeon* d = new Dungeon(100,60,30);// must be divisible by 2
+        d->randomizeRooms();
+        d->polishDungeon();
+    }
+    //int r=d->roomNumber;
+    //printf("Number of Rooms: %d\n",r+1);
 }
