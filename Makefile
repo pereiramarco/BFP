@@ -6,8 +6,8 @@ all: link
 run: link
 	./jogo
 
-link: texman.o vec2d.o assetman.o ECS.o lmap.o map.o game.o main.o
-	g++ -Wall main.o lmap.o map.o game.o vec2d.o ECS.o texman.o assetman.o $(SDL_FLAG) -o jogo
+link: texman.o vec2d.o assetman.o ECS.o dungeons.o lmap.o map.o game.o main.o
+	g++ -Wall main.o dungeons.o lmap.o map.o game.o vec2d.o ECS.o texman.o assetman.o $(SDL_FLAG) -o jogo
 
 ECS.o: include/ECS/ECS.hpp
 	g++ -o ECS.o -c -g -Wall src/ECS/ECS.cpp
@@ -26,6 +26,9 @@ map.o: include/Map.hpp include/TextureManager.hpp include/LocalMap.hpp include/C
 
 lmap.o: include/LocalMap.hpp include/TextureManager.hpp include/ConstantValues.hpp
 	g++ -o lmap.o -c -Wall -g src/LocalMap.cpp
+
+dungeons.o: include/Dungeon.hpp
+	g++ -o dungeons.o -c -Wall -g src/Dungeon.cpp
 
 game.o: include/Game.hpp include/ECS/Components.hpp include/ConstantValues.hpp
 	g++ -o game.o -c -Wall -g src/Game.cpp

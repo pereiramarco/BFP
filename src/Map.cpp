@@ -18,7 +18,7 @@ Mapa::Mapa(SDL_Renderer * ren,int h,int w) {
     randomizeLocalMaps();
     for (int i=0;i<height;i++) {
         for (int j=0;j<width;j++) {
-            Game::addTile(i,j,true,worldMap[i][j],std::pair<char,int> ('a',0));
+            Game::addTileWorld(i,j,worldMap[i][j]);
         }
     }
 }
@@ -40,12 +40,12 @@ LocalMap* Mapa::getLocalMap(int i,int j) {
     return this->mapa[j][i];//recebe x e y mas na matriz está trocado
 }
 
+Dungeon* Mapa::getDungeon(std::pair<int,int> p) {
+     return this->dungeons[p];
+ }
+
 std::pair<char,int> Mapa::getLocalMapTile(int wI,int wJ,int i,int j) {
     return mapa[wI][wJ]->getTile(i,j);
-}
-
-double distanceBetweenPoints(int x1,int y1,int x2,int y2) {
-    return sqrt(pow(x2-x1,2)+pow(y2-y1,2));
 }
 
 int Mapa::closestCreator(int x,int y) {
@@ -119,7 +119,7 @@ void Mapa::randomizeMap(int fP) {
             if (worldMap[i][j]!=0) {
                 int r=rand()%1001;
                 if (r<=15) {
-                    Game::addTile(i,j,true,worldMap[i][j],std::pair<char,int>('.',-1));
+                    Game::addTileWorld(i,j,worldMap[i][j]);
                     r=rand()%101;
                     if (r<=60) {
                         worldMap[i][j]=5;
@@ -137,6 +137,7 @@ void Mapa::randomizeMap(int fP) {
 }
 
 void Mapa::randomizeLocalMaps() {
+    srand((unsigned int)time(NULL)*rand());
     int i,j,esq,cima,dir,baixo;
     for (i=0;i<height;i++) {
         for (j=0;j<width;j++) {
@@ -149,6 +150,13 @@ void Mapa::randomizeLocalMaps() {
                 esq=worldMap[i][j-1];
             if (j<width-1)
                 dir=worldMap[i][j+1];
+            if (worldMap[i][j]==5) {
+                std::pair<int,int> p(i,j);
+                Dungeon *d = new Dungeon(120,80,30);
+                d->randomizeRooms();
+                d->polishDungeon();
+                dungeons[p]=d;
+            }
             mapa[i][j]->randomizeTile(worldMap[i][j]+'a',cima+'a',dir+'a',baixo+'a',esq+'a');
         }
     }

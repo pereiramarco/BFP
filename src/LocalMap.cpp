@@ -70,9 +70,10 @@ void LocalMap::randomizeTile(char type0,char type1,char type2,char type3,char ty
                 }
             }
             if (i==22 && j==22 && type0=='f') {
-                for (k=0;k<5;k++) {
-                    for (l=0;l<7;l++) {
-                        mapa[i+k][j+l].second=8+k*7 + l;
+                for (k=-1;k<6;k++) {
+                    for (l=-1;l<8;l++) {
+                        if (k==-1 || k==5 || l==-1 || l==7) mapa[i+k][j+l].second=rand()%2;
+                        else mapa[i+k][j+l].second=8+k*7 + l;
                     }
                 }
 

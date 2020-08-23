@@ -22,11 +22,16 @@ public:
     void render();
     void handleinput();
     void update();
-    void updateCamAndPos();
+    void updatePos();
+    void updateCam();
     void loadLocal();
+    void loadDungeon();
     void updateCollisions(Vector2D playerpos,Vector2D localPos,Vector2D worldPos);
+    void checkInteractions();
+    void addTileLocal(float x,float y,std::pair<char,int> type);
+    void addTileInside(float x,float y,int mos);
 
-    static void addTile(float x,float y,bool mundo, int tile, std::pair<char,int> type);
+    static void addTileWorld(float x,float y,int tile);
     static int statb4;
     static int stat;
     static SDL_Renderer * renderer;

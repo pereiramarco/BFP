@@ -20,7 +20,22 @@ class TileComponent : public Component {
 
     TileComponent() = default;
 
-    TileComponent(float x,float y,int sH,int sW,int dH,int dW,bool mundo, int tileID,std::pair<char,int> type) {
+    TileComponent(float x,float y,int sH,int sW,int dH,int dW,int tileID) {
+        world=true;
+        position.x=y*dH;
+        position.y=x*dW;
+        dest.y=x*dW;
+        dest.x=y*dH;
+        dest.w=dW;
+        dest.h=dH;
+        src.w=sW;
+        src.h=sH;
+        src.y=0;
+        path="world-tiles";
+        src.x=tileID*16;
+    }
+
+    TileComponent(float x,float y,int sH,int sW,int dH,int dW,bool mundo,int tileID) {
         world=mundo;
         position.x=y*dH;
         position.y=x*dW;
@@ -31,29 +46,35 @@ class TileComponent : public Component {
         src.w=sW;
         src.h=sH;
         src.y=0;
-        if (mundo) {
-            path="world-tiles";
-            src.x=tileID*16;
+        path="dungeon-tiles";
+        src.x=32 *tileID;
+    }
+
+    TileComponent(float x,float y,int sH,int sW,int dH,int dW,std::pair<char,int> type) {
+        world=false;
+        position.x=y*dH;
+        position.y=x*dW;
+        dest.y=x*dW;
+        dest.x=y*dH;
+        dest.w=dW;
+        dest.h=dH;
+        src.w=sW;
+        src.h=sH;
+        src.y=0;
+        switch (type.first) {
+            case 'a':
+                path="water-tiles";
+                break;
+            case 'c':
+                path="beach-tiles";
+                break;
+            case 'b':
+                path="plains-tiles";
+                break;
+            default:
+                break;
         }
-        else {
-            switch (type.first) {
-                case 'a':
-                    path="water-tiles";
-                    break;
-                case 'c':
-                    path="beach-tiles";
-                    break;
-                case 'b':
-                    path="plains-tiles";
-                    break;
-                case 'f':
-                    path="dungeon-tiles";
-                    break;
-                default:
-                    break;
-            }
-            src.x=32*type.second;
-        }
+        src.x=32*type.second;
     }
 
     void init() {
@@ -66,7 +87,7 @@ class TileComponent : public Component {
     }
 
     void update() override {
-        if (Game::stat!=2 && Game::stat!=3) {
+        if (Game::stat!=2 && Game::stat!=3 && Game::stat!=5) {
             sprite->setDraw(false);
         }
         else {

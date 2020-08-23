@@ -66,33 +66,7 @@ void Game::init(const char* title, int x, int y, int width, int height,bool full
 }
 
 void Game::initSave(std::string savename) {
-    //int i,j,k,l;
     mapa = new Mapa(renderer,ConstantValues::mapH,ConstantValues::mapW);
-    /*
-    std::ofstream saveFile (savename);
-    for (i=0;i<45;i++) {
-        for (j=0;j<80;j++) {
-            saveFile<<std::to_string(mapa->getTile(i,j));
-            if (j!=Constantvalues) saveFile<<",";
-            else saveFile<<"\n";
-        }
-    }
-    saveFile<<"\n";
-    for (i=0;i<45;i++) {
-        for (j=0;j<80;j++) {
-            for (k=0;k<ConstantValues::localMapSizeW;k++) {
-                for (l=0;l<ConstantValues::localMapSizeW;l++) {
-                    std::pair<char,int> pair=mapa->getLocalMapTile(i,j,k,l);
-                    saveFile<<pair.first<<"-"<<pair.second;
-                    if (l!=49) saveFile<<"|";
-                }
-                saveFile<<"\n";
-            }
-            saveFile<<"\n";
-        }
-        saveFile<<"\n";
-    }
-    */
 }
 
 void Game::loadLocal() {
@@ -182,14 +156,14 @@ void Game::loadLocal() {
         if (temporary) {
             for (i=ii;i<maxI;i++) {
                 for (j=jj;j<maxJ;j++) {
-                    addTile(i+ConstantValues::localMapSizeH*d,j+ConstantValues::localMapSizeW*r,false,-1,temporary->getTile(i,j));
+                    addTileLocal(i+ConstantValues::localMapSizeH*d,j+ConstantValues::localMapSizeW*r,temporary->getTile(i,j));
                 }
             }
         }
     }
 }
 
-void Game::updateCamAndPos() {
+void Game::updatePos() {
     float s=player->getComponent<TransformComponent>().speed;
     Vector2D v = player->getComponent<TransformComponent>().velocity;
     if (Game::stat==3) {
@@ -229,6 +203,14 @@ void Game::updateCamAndPos() {
             }
             else localPosition->y=0;
         }
+    }
+    else {
+        worldPosition->x=player->getComponent<SpriteComponent>().getDestx()/ConstantValues::worldTileW;
+        worldPosition->y=player->getComponent<SpriteComponent>().getDesty()/ConstantValues::worldTileH;
+    }
+}
+
+void Game::updateCam() {
         camera.x=player->getComponent<TransformComponent>().position.x-ConstantValues::screenSizeW/2;
         camera.y=player->getComponent<TransformComponent>().position.y-ConstantValues::screenSizeH/2;
         if (camera.x<0)
@@ -239,59 +221,100 @@ void Game::updateCamAndPos() {
             camera.y=0;
         if (camera.y>camera.h) 
             camera.y=camera.h;
-    }
-    else {
-        worldPosition->x=player->getComponent<SpriteComponent>().getDestx()/24;
-        worldPosition->y=player->getComponent<SpriteComponent>().getDesty()/24;
-    }
 }
 
-void Game::addTile(float x,float y,bool mundo, int mos, std::pair<char,int> type) {
+void Game::addTileWorld(float x,float y,int mos) {
     int r1,r2,d;
     auto& tile(manager.addEntity());
-    if (mundo) {
-        r1=ConstantValues::worldTileH;
-        r2=ConstantValues::worldTileW;
-        d=16; //size inside sprite sheet
-    }
-    else {
-        r1=ConstantValues::localTileW;
-        r2=ConstantValues::localTileH;
-        d=32;//size inside sprite sheet
-        if (type.second>1) {
-            auto& tileO(manager.addEntity());
-            tileO.addComponent<TileComponent>(x,y,d,d,r2,r1,mundo,mos,type);
-            switch (type.second) {
-                case 38:
-                case 39:
-                case 40:
-                case 2:
-                case 3:
-                    tileO.addComponent<ColliderComponent>(0,0,64,64,"small object");
-                    tileO.addGroup(GroupCollider);
-                    type.second=1;
-                    break;
-                case 4:
-                    tileO.addComponent<ColliderComponent>(40,40,24,24,"tree");
-                    tileO.addGroup(GroupCollider);
-                    type.second=0;
-                    break;
-                case 5:
-                    tileO.addComponent<ColliderComponent>(0,40,24,24,"tree");
-                    tileO.addGroup(GroupCollider);
-                    type.second=1;
-                    break;
-                default:
-                    tileO.addGroup(GroupCollider);
-                    type.second=0;
-                    break;
-                }
+    r1=ConstantValues::worldTileH;
+    r2=ConstantValues::worldTileW;
+    d=16; //size inside sprite sheet
+    tile.addComponent<TileComponent>(x,y,d,d,r2,r1,mos);
+    tile.addGroup(GroupWorldMap);
+}
+
+void Game::addTileLocal(float x,float y,std::pair<char,int> type) {
+    int r1,r2,d;
+    auto& tile(manager.addEntity());
+    r1=ConstantValues::localTileW;
+    r2=ConstantValues::localTileH;
+    d=32; //size inside sprite sheet
+    if (type.second>1) {
+        auto& tileO(manager.addEntity());
+        tileO.addComponent<TileComponent>(x,y,d,d,r2,r1,type);
+        switch (type.second) {
+            case 38:
+            case 39:
+            case 40:
+            case 2:
+            case 3:
+                tileO.addComponent<ColliderComponent>(0,0,64,64,"small object");
+                tileO.addGroup(GroupCollider);
+                type.second=1;
+                break;
+            case 4:
+                tileO.addComponent<ColliderComponent>(40,40,24,24,"tree");
+                tileO.addGroup(GroupCollider);
+                type.second=0;
+                break;
+            case 5:
+                tileO.addComponent<ColliderComponent>(0,40,24,24,"tree");
+                tileO.addGroup(GroupCollider);
+                type.second=1;
+                break;
+            default:
+                tileO.addGroup(GroupCollider);
+                type.second=0;
+                break;
         }
     }
-    tile.addComponent<TileComponent>(x,y,d,d,r2,r1,mundo,mos,type);
-    if (mundo) 
-        tile.addGroup(GroupWorldMap);
-    else 
+    tile.addComponent<TileComponent>(x,y,d,d,r2,r1,type);
+    tile.addGroup(GroupLocalMap);
+}
+
+void Game::addTileInside(float x,float y,int mos) {
+    int r1,r2,d;
+    auto& tile(manager.addEntity());
+    r1=ConstantValues::localTileW;
+    r2=ConstantValues::localTileH;
+    d=32; //size inside sprite sheet
+    if (mos>3 && mos!=20) {
+        if (mos>9) mos--;
+        auto& tileO(manager.addEntity());
+        tileO.addComponent<TileComponent>(x,y,d,d,r2,r1,false,mos);
+        switch (mos) {
+            case 5:
+            case 6:
+                tileO.addComponent<ColliderComponent>(0,0,64,64,"bottom corner");
+            break;
+            case 8:
+                tileO.addComponent<ColliderComponent>(0,48,64,16,"wall horizontal");
+            break;
+            case 4:
+            case 12:
+                tileO.addComponent<ColliderComponent>(48,0,16,64,"wall right");
+            break;
+            case 7:
+            case 13:
+                tileO.addComponent<ColliderComponent>(0,0,16,64,"wall left");
+            break;
+            case 10:
+                tileO.addComponent<ColliderComponent>(48,48,16,16,"bottom right corner");
+            break;
+            case 11:
+                tileO.addComponent<ColliderComponent>(0,48,16,16,"bottom left corner");
+            break;
+        }
+        tileO.addGroup(GroupCollider);
+        mos=0;
+    }
+    if (mos==20) mos=13;
+    tile.addComponent<TileComponent>(x,y,d,d,r2,r1,false,mos);
+    if (mos && mos!=13) {
+        tile.addComponent<ColliderComponent>(0,0,64,64,"wall top");
+        tile.addGroup(GroupCollider);
+    }
+    else
         tile.addGroup(GroupLocalMap);
 }
 
@@ -307,12 +330,42 @@ void Game::updateCollisions(Vector2D playerpos,Vector2D localPos,Vector2D worldP
             localPosition->x = localPos.x;
             localPosition->y = localPos.y;
             worldPosition->x = worldPos.x;
-            worldPosition->y= worldPos.y;
+            worldPosition->y = worldPos.y;
             player->getComponent<TransformComponent>().position=playerpos;
             break;
         }
     }
     order=shouldOverlap;
+}
+
+void Game::loadDungeon() {
+    int i,j;
+    manager.delGroup(GroupLocalMap);
+    manager.delGroup(GroupCollider);
+    std::pair<int,int> p(worldPosition->y,worldPosition->x);
+    Dungeon * d = mapa->getDungeon(p);
+    for (i=0;i<80;i++) {
+        for (j=0;j<120;j++) {
+            int x=d->getTile(i,j);
+            addTileInside(i,j,x);
+        }       
+    }
+}
+
+void Game::checkInteractions() {
+    if (player->getComponent<KeyboardController>().interact) {
+        std::pair<int,int> p(worldPosition->y,worldPosition->x);
+        Dungeon * d = mapa->getDungeon(p);
+        if (d && localPosition->x>23.5 && localPosition->x<24.5 && (int)localPosition->y==24) {
+            stat=5;
+            camera={0,0,90*ConstantValues::localTileW,63*ConstantValues::localTileH}; //why 63 and 90?
+            std::pair<int,int> pair=d->getEntrance();
+            player->getComponent<TransformComponent>().position.y=pair.second*ConstantValues::localTileW;
+            player->getComponent<TransformComponent>().position.x=pair.first*ConstantValues::localTileH;
+            loadDungeon();
+            player->getComponent<KeyboardController>().interact=false;
+        }
+    }
 }
 
 void Game::render() {
@@ -421,11 +474,14 @@ void Game::update() {
         localPos.y = localPosition->y;
         worldPos.x = worldPosition->x;
         worldPos.y = worldPosition->y;
-        updateCamAndPos();
+        if (stat!=5) updatePos();
+        updateCam();
     }
     manager.refresh();
     manager.update();
-    if (stat==3 && player)
+    if ((stat==3 || stat==5) && player) {
         updateCollisions(playerpos,localPos,worldPos);
+        checkInteractions();
+    }
 }
 

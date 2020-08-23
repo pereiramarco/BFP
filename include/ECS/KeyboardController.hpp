@@ -7,9 +7,11 @@
 class KeyboardController : public Component {
 public:
     TransformComponent * transform;
+    bool interact;
 
     void init() override {
         transform=&entity->getComponent<TransformComponent>();
+        interact=false;
     }
 
     void update() override {
@@ -27,6 +29,9 @@ public:
                 break;
             case SDLK_RIGHT:
                 transform->velocity.x=1;
+                break;
+            case SDLK_e:
+                interact=true;
                 break;
             case SDLK_ESCAPE:
                 Game::stat=1;

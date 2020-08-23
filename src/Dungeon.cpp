@@ -1,6 +1,5 @@
 #include "../include/Dungeon.hpp"
 #include <stdio.h>
-
 static int** matrix;
 
 Dungeon::Dungeon(int w,int h,int rn) {
@@ -21,16 +20,20 @@ Dungeon::Dungeon(int w,int h,int rn) {
     }
     srand(time(NULL));
     int r=rand()%2;
-    int r1=rand()%(width-2)+1;//max is width-2 min is 1
-    int r2=rand()%(height-2)+1;//^^^^^
     int x,y;
     if (r) {
-        y=r1;
+        y=rand()%(width-2)+1;//max is width-2 min is 1;
         x=(rand()%2)*(height-3)+1;
+        if (x!=1) entrance.second=(x+1)*2+1;
+        else entrance.second=0;
+        entrance.first=y*2+1;
     }
     else {
-        x=r2;
+        x=rand()%(height-2)+1;//^^^^^;
         y=(rand()%2)*(width-3)+1;
+        if (y!=1) entrance.first=(y+1)*2+1;
+        else entrance.first=0;
+        entrance.second=x*2+1;
     }
     for (i=x-1;i<x+2;i++) {
         for (j=y-1;j<y+2;j++) {
@@ -47,6 +50,14 @@ Dungeon::~Dungeon() {}
 
 double distanceBetweenPoints(int x1,int y1,int x2,int y2) {
     return sqrt(pow(x2-x1,2)+pow(y2-y1,2));
+}
+
+std::pair<int,int> Dungeon::getEntrance() {
+    return entrance;
+}
+
+int Dungeon::getTile(int i,int j) {
+    return this->map[i][j]*-1;
 }
 
 std::pair<int,int> Dungeon::getClosest(int to) {
@@ -146,7 +157,6 @@ void Dungeon::doubleMap() {
 
 void Dungeon::randomizeRooms() {
     int r=1,p=0,i,j,k;
-    srand(time(NULL));
     for (i=14;i<14+roomNumber;r=1,p=0,i++) {//deixei o 2 pra room final
         while (r && p<15) {
             p++;
@@ -182,12 +192,14 @@ void Dungeon::randomizeRooms() {
             roomNumber-=1;
         }
     }
+    /*
     for (i=0;i<height;i++) {
         for (j=0;j<width;j++) {
             if (matrix[i][j]>13)
                 hallClose(i,j);
         }
     }
+    */
     fixHalls();
     doubleMap();
 }
@@ -222,41 +234,41 @@ void Dungeon::makeEntrance(int x,int y) {
     else if (c4 && map[y][x+1]==-20)
         r=true;
     if ((up && l) || (l && down)) {
-        map[y][x]=-7;       
+        map[y][x]=LEFTWALL;       
         if (b1 && b3) {
-            if (up) map[y][x+1]=-13;
-            else map[y][x+1]=-11;
+            if (up) map[y][x+1]=UPRIGHTCORNER;
+            else map[y][x+1]=RIGHTDOWNCORNER;
         }
     }
     else if ((u && left) || (u && right)) {
-        map[y][x]=-2;
+        map[y][x]=TOPWALL;
         if (b2 && b4 && left)
-            map[y+1][x]=-15;
+            map[y+1][x]=DOWNLEFTCORNER;
     }
     else if ((down && r) || (up && r)) // não se mexe no ant
-        map[y][x]=-4;
+        map[y][x]=RIGHTWALL;
     else if ((d && right) || (d && left )) {
-        map[y][x]=-8;
+        map[y][x]=BOTTOMWALL;
     }
     else if (up) {
-        if (!b1) map[y][x]=-13;
-        else map[y][x]=-12;
-        if (b1 && b3) map[y][x+1]=-13;
+        if (!b1) map[y][x]=UPRIGHTCORNER;
+        else map[y][x]=LEFTUPCORNER;
+        if (b1 && b3) map[y][x+1]=UPRIGHTCORNER;
     }   
     else if (left) {
-        if (!b2) map[y][x]=-15;
-        else map[y][x]=-14;
-        if (b2 && b4) map[y+1][x]=-15;
+        if (!b2) map[y][x]=DOWNLEFTCORNER;
+        else map[y][x]=LEFTUPCORNER;
+        if (b2 && b4) map[y+1][x]=DOWNLEFTCORNER;
     }
     else if (down) {
-        if (!b1) map[y][x]=-11;
-        else map[y][x]=-10;
-        if (b1 && b3) map[y][x+1]=-11;
+        if (!b1) map[y][x]=RIGHTDOWNCORNER;
+        else map[y][x]=DOWNLEFTCORNER;
+        if (b1 && b3) map[y][x+1]=RIGHTDOWNCORNER;
     }
     else if (right) {
-        if (!b2) map[y][x]=-17;
-        else map[y][x]=-16;
-        if (b2 && b4) map[y+1][x]=-17;
+        if (!b2) map[y][x]=RIGHTDOWNCORNER;
+        else map[y][x]=UPRIGHTCORNER;
+        if (b2 && b4) map[y+1][x]=RIGHTDOWNCORNER;
     }
 }
 
@@ -268,14 +280,14 @@ void Dungeon::polishRoom(int y,int x,int num) {
             if (map[i+y][j+x]!=num) continue;
             if (i && i!=h-1 && j && j!=w-1) map[i+y][j+x]=0;
             else if (isEntrance(j+x,i+y)) makeEntrance(j+x,i+y);
-            else if (!i && !j) map[i+y][j+x]=-1;
-            else if (!i && j==w-1) map[i+y][j+x]=-3;
-            else if (i==h-1 && !j) map[i+y][j+x]=-6;
-            else if (!i) map[i+y][j+x]=-2;
-            else if (!j) map[i+y][j+x]=-7;
-            else if (i==h-1 && j==w-1) map[i+y][j+x]=-5;
-            else if (j==w-1) map[i+y][j+x]=-4;
-            else map[i+y][j+x]=-8;
+            else if (!i && !j) map[i+y][j+x]=TOPRIGHTCORNER;
+            else if (!i && j==w-1) map[i+y][j+x]=TOPLEFTCORNER;
+            else if (i==h-1 && !j) map[i+y][j+x]=BOTTOMLEFTCORNER;
+            else if (!i) map[i+y][j+x]=TOPWALL;
+            else if (!j) map[i+y][j+x]=LEFTWALL;
+            else if (i==h-1 && j==w-1) map[i+y][j+x]=BOTTOMRIGHTCORNER;
+            else if (j==w-1) map[i+y][j+x]=RIGHTWALL;
+            else map[i+y][j+x]=BOTTOMWALL;
         }
     }
 }
@@ -283,70 +295,70 @@ void Dungeon::polishRoom(int y,int x,int num) {
 void Dungeon::polishHall(int i,int j) {
     switch (map[i][j]) {
         case 3:
-            map[i][j]=-12;
-            map[i][j+1]=-13;
-            map[i+1][j]=-10;
-            map[i+1][j+1]=-11;
+            map[i][j]=LEFTUPCORNER;
+            map[i][j+1]=UPRIGHTCORNER;
+            map[i+1][j]=DOWNLEFTCORNER;
+            map[i+1][j+1]=RIGHTDOWNCORNER;
         break;
         case 4:
-            map[i][j]=-7;
-            map[i][j+1]=-4;
-            map[i+1][j]=-7;
-            map[i+1][j+1]=-4;
+            map[i][j]=LEFTWALL;
+            map[i][j+1]=RIGHTWALL;
+            map[i+1][j]=LEFTWALL;
+            map[i+1][j+1]=RIGHTWALL;
         break;
         case 5:
-            map[i][j]=-2;
-            map[i][j+1]=-2;
-            map[i+1][j]=-8;
-            map[i+1][j+1]=-8;
+            map[i][j]=TOPWALL;
+            map[i][j+1]=TOPWALL;
+            map[i+1][j]=BOTTOMWALL;
+            map[i+1][j+1]=BOTTOMWALL;
         break;
         case 6:
-            map[i][j]=-12;
-            map[i][j+1]=-4;
-            map[i+1][j]=-8;
-            map[i+1][j+1]=-12;
+            map[i][j]=LEFTUPCORNER;
+            map[i][j+1]=RIGHTWALL;
+            map[i+1][j]=BOTTOMWALL;
+            map[i+1][j+1]=BOTTOMRIGHTCORNER;
         break;
         case 7:
-            map[i][j]=-2;
-            map[i][j+1]=-10;
-            map[i+1][j]=-10;
-            map[i+1][j+1]=-4;
+            map[i][j]=TOPWALL;
+            map[i][j+1]=TOPLEFTCORNER;
+            map[i+1][j]=DOWNLEFTCORNER;
+            map[i+1][j+1]=RIGHTWALL;
         break;
         case 8:
-            map[i][j]=-11;
-            map[i][j+1]=-2;
-            map[i+1][j]=-7;
-            map[i+1][j+1]=-11;
+            map[i][j]=TOPRIGHTCORNER;
+            map[i][j+1]=TOPWALL;
+            map[i+1][j]=LEFTWALL;
+            map[i+1][j+1]=RIGHTDOWNCORNER;
         break;
         case 9:
-            map[i][j]=-7;
-            map[i][j+1]=-13;
-            map[i+1][j]=-13;
-            map[i+1][j+1]=-8;
+            map[i][j]=LEFTWALL;
+            map[i][j+1]=UPRIGHTCORNER;
+            map[i+1][j]=BOTTOMLEFTCORNER;
+            map[i+1][j+1]=BOTTOMWALL;
         break;
         case 10:
-            map[i][j]=-12;
-            map[i][j+1]=-13;
-            map[i+1][j]=-8;
-            map[i+1][j+1]=-8;
+            map[i][j]=LEFTUPCORNER;
+            map[i][j+1]=UPRIGHTCORNER;
+            map[i+1][j]=BOTTOMWALL;
+            map[i+1][j+1]=BOTTOMWALL;
         break;
         case 11:
-            map[i][j]=-7;
-            map[i][j+1]=-13;
-            map[i+1][j]=-7;
-            map[i+1][j+1]=-11;
+            map[i][j]=LEFTWALL;
+            map[i][j+1]=UPRIGHTCORNER;
+            map[i+1][j]=LEFTWALL;
+            map[i+1][j+1]=RIGHTDOWNCORNER;
         break;
         case 12:
-            map[i][j]=-2;
-            map[i][j+1]=-2;
-            map[i+1][j]=-10;
-            map[i+1][j+1]=-11;
+            map[i][j]=TOPWALL;
+            map[i][j+1]=TOPWALL;
+            map[i+1][j]=DOWNLEFTCORNER;
+            map[i+1][j+1]=RIGHTDOWNCORNER;
         break;
         case 13:
-            map[i][j]=-12;
-            map[i][j+1]=-4;
-            map[i+1][j]=-10;
-            map[i+1][j+1]=-4;
+            map[i][j]=LEFTUPCORNER;
+            map[i][j+1]=RIGHTWALL;
+            map[i+1][j]=DOWNLEFTCORNER;
+            map[i+1][j+1]=RIGHTWALL;
         break;
     }
 }
@@ -365,28 +377,29 @@ void Dungeon::polishDungeon() {
             polishHall(i,j);
         }
     }
+    map[entrance.second][entrance.first]=-19;
+    /*
     puts("#####\npolished\n#####");
-    for (i=0;i<height*2;i++) {
-        for (j=0;j<width*2;j++) {
-            if (!map[i][j] || map[i][j]==-20) printf("  ");
-            else if (map[i][j]<-9) printf("%c ",map[i][j]*-1+55);
-            else if (map[i][j]<0) printf("%d ",map[i][j]*-1);
-            else printf("%d ",map[i][j]);
-        }
-        puts("");
+        for (i=0;i<height*2;i++) {
+            for (j=0;j<width*2;j++) {
+                if (!map[i][j] || map[i][j]==-20) printf("  ");
+                else if (map[i][j]<-9) printf("%c ",map[i][j]*-1+55);
+                else if (map[i][j]<0) printf("%d ",map[i][j]*-1);
+                else printf("%d ",map[i][j]);
+            }
+            puts("");
     }
+    */
 }
 
-void Dungeon::randomizeDungeon() {
-
-}
-
+/*
 int main() {
     for (int i=0;i<1;i++) {
         Dungeon* d = new Dungeon(100,60,30);// must be divisible by 2
         d->randomizeRooms();
         d->polishDungeon();
+        int r=d->roomNumber;
+        printf("Number of Rooms: %d\n",r+1);
     }
-    //int r=d->roomNumber;
-    //printf("Number of Rooms: %d\n",r+1);
 }
+*/
