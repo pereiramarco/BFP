@@ -18,7 +18,6 @@ Dungeon::Dungeon(int w,int h,int rn) {
     for (i=0;i<h;i++) {
         map[i]=(int*)malloc(sizeof(int)*w);
     }
-    srand(time(NULL));
     int r=rand()%2;
     int x,y;
     if (r) {

@@ -14,6 +14,7 @@ Vector2D * Game::localPosition;
 int Game::stat=0;
 int Game::statb4=0;
 static int first=0;
+static Vector2D positionb4;
 int order=0;
 SDL_Rect Game::camera = {0,0,(ConstantValues::mapW-1)*ConstantValues::localMapSizeW*ConstantValues::localTileW,(ConstantValues::mapH-1)*ConstantValues::localMapSizeH*ConstantValues::localTileH};
 
@@ -356,15 +357,27 @@ void Game::checkInteractions() {
     if (player->getComponent<KeyboardController>().interact) {
         std::pair<int,int> p(worldPosition->y,worldPosition->x);
         Dungeon * d = mapa->getDungeon(p);
-        if (d && localPosition->x>23.5 && localPosition->x<24.5 && (int)localPosition->y==24) {
-            stat=5;
-            camera={0,0,90*ConstantValues::localTileW,63*ConstantValues::localTileH}; //why 63 and 90?
-            std::pair<int,int> pair=d->getEntrance();
-            player->getComponent<TransformComponent>().position.y=pair.second*ConstantValues::localTileW;
-            player->getComponent<TransformComponent>().position.x=pair.first*ConstantValues::localTileH;
-            loadDungeon();
-            player->getComponent<KeyboardController>().interact=false;
+        std::pair<int,int> pair=d->getEntrance();
+        Vector2D playerpos=player->getComponent<TransformComponent>().position;
+        if (stat==3) {
+            if (d && localPosition->x>23.5 && localPosition->x<24.5 && (int)localPosition->y==24) {
+                stat=5;
+                camera={0,0,90*ConstantValues::localTileW,63*ConstantValues::localTileH}; //why 63 and 90?
+                positionb4=player->getComponent<TransformComponent>().position;
+                player->getComponent<TransformComponent>().position.y=pair.second*ConstantValues::localTileW;
+                player->getComponent<TransformComponent>().position.x=pair.first*ConstantValues::localTileH;
+                loadDungeon();
+            }
         }
+        else if (stat==5) {
+            if (pair.first*ConstantValues::localTileW==(int)playerpos.x && pair.second*ConstantValues::localTileH==(int)playerpos.y) {
+                stat=3;
+                camera = {0,0,(ConstantValues::mapW-1)*ConstantValues::localMapSizeW*ConstantValues::localTileW,(ConstantValues::mapH-1)*ConstantValues::localMapSizeH*ConstantValues::localTileH};
+                player->getComponent<TransformComponent>().position=positionb4;
+                loadLocal();
+            }
+        }
+        player->getComponent<KeyboardController>().interact=false;
     }
 }
 
@@ -418,7 +431,6 @@ void Game::handleinput() {
 void Game::update() {
     //printf("Local: (%f,%f)\nWorld: (%f,%f)\n",Game::localPosition->x,Game::localPosition->y,Game::worldPosition->x,Game::worldPosition->y);
     if (statb4!=stat) {
-        statb4=stat;
         if (stat==1) {
             auto& menu(manager.addEntity());
             menu.addGroup(GroupMenus);
@@ -446,7 +458,7 @@ void Game::update() {
             nPlayer.addGroup(GroupPlayers);
             player = &nPlayer;
         }
-        else if (stat==3) {
+        else if (stat==3 && statb4==1) {
             camera = {0,0,(ConstantValues::mapW-1)*ConstantValues::localMapSizeW*ConstantValues::localTileW,(ConstantValues::mapH-1)*ConstantValues::localMapSizeH*ConstantValues::localTileH};
             localPosition=new Vector2D(ConstantValues::playerLocalPosX-1,ConstantValues::playerLocalPosY-1);
             //printf("WorldPosition x: %f y:%f\nLocalPosition x: %f y:%f\nCamera x:%d y:%d\n",worldPosition->x,worldPosition->y,Game::localPosition->x,Game::localPosition->y,camera.x,camera.y);
@@ -464,6 +476,7 @@ void Game::update() {
         }
         else if (stat==4) {
         }
+        statb4=stat;
     }
     Vector2D playerpos={0,0};
     Vector2D localPos={0,0};

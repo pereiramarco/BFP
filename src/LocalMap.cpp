@@ -53,19 +53,19 @@ void LocalMap::randomizeTile(char type0,char type1,char type2,char type3,char ty
             if (mapa[i][j].first=='.') {
                 switch (mancha[i][j]) {
                     case '0':
-                        mapa[i][j].first=type0;
+                        mapa[i][j].first=type0=='f'?'b':type0;
                         break;
                     case '1':
-                        mapa[i][j].first=type1;
+                        mapa[i][j].first=type1=='f'?'b':type1;
                         break;
                     case '2':
-                        mapa[i][j].first=type2;
+                        mapa[i][j].first=type2=='f'?'b':type2;
                         break;
                     case '3':
-                        mapa[i][j].first=type3;
+                        mapa[i][j].first=type3=='f'?'b':type3;
                         break;
                     case '4':
-                        mapa[i][j].first=type4;
+                        mapa[i][j].first=type4=='f'?'b':type4;
                         break;
                 }
             }
@@ -78,8 +78,6 @@ void LocalMap::randomizeTile(char type0,char type1,char type2,char type3,char ty
                 }
 
             }
-            if (type0=='f' || type1=='f' || type2=='f' || type3=='f' || type4=='f') 
-                mapa[i][j].first='b';
             if (mapa[i][j].second==-1) {
                 if (i!=ConstantValues::localMapSizeW-1 && j!=ConstantValues::localMapSizeH-1 && mapa[i][j+1].second==-1 && mapa[i+1][j+1].second==-1) r=rand()%101;
                 else r=rand()%100;

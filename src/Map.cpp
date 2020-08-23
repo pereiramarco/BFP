@@ -137,10 +137,10 @@ void Mapa::randomizeMap(int fP) {
 }
 
 void Mapa::randomizeLocalMaps() {
-    srand((unsigned int)time(NULL)*rand());
     int i,j,esq,cima,dir,baixo;
     for (i=0;i<height;i++) {
         for (j=0;j<width;j++) {
+            srand((unsigned int)time(NULL)*i*j);
             cima=baixo=esq=dir=worldMap[i][j];
             if (i)
                 cima=worldMap[i-1][j];
