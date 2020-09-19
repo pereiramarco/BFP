@@ -40,6 +40,25 @@ LocalMap* Mapa::getLocalMap(int i,int j) {
     return this->mapa[j][i];//recebe x e y mas na matriz está trocado
 }
 
+int Mapa::getSettlementBuildingV(int h,int w,int buildID) {
+    std::pair<int,int> p(h,w);
+    return settlements[p]->getVersion(buildID);
+}
+
+void Mapa::setLocalMapmap(int y,int x,int ** map,char d) {
+    int i,j;
+    std::pair<char,int> **mapinha;
+    mapinha=(std::pair<char,int>**)malloc(sizeof(std::pair<char,int>*)*50);
+    for (i=0;i<50;i++) {
+        mapinha[i]=(std::pair<char,int>*)malloc(sizeof(std::pair<char,int>)*50);
+        for (j=0;j<50;j++) {
+            std::pair<char,int> p(d,map[i][j]);
+            mapinha[i][j]=p;
+        }
+    }
+    mapa[y][x]->setTileMap(mapinha);
+}
+
 Dungeon* Mapa::getDungeon(std::pair<int,int> p) {
      return this->dungeons[p];
  }
@@ -157,7 +176,23 @@ void Mapa::randomizeLocalMaps() {
                 d->polishDungeon();
                 dungeons[p]=d;
             }
-            mapa[i][j]->randomizeTile(worldMap[i][j]+'a',cima+'a',dir+'a',baixo+'a',esq+'a');
+            if (worldMap[i][j]==3) {
+                std::pair<int,int> p(i,j);
+                Settlement *s = new Settlement(50,50,true);
+                s->makeSettlement();
+                settlements[p]=s;
+                setLocalMapmap(i,j,s->getMap(),'d');
+            }
+            else if (worldMap[i][j]==4) {
+                std::pair<int,int> p(i,j);
+                Settlement *s = new Settlement(50,50,false);
+                s->makeSettlement();
+                settlements[p]=s;
+                setLocalMapmap(i,j,s->getMap(),'e');
+                
+            }
+            else
+                mapa[i][j]->randomizeTile(worldMap[i][j]+'a',cima+'a',dir+'a',baixo+'a',esq+'a');
         }
     }
 }

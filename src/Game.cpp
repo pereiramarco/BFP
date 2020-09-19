@@ -59,6 +59,21 @@ void Game::init(const char* title, int x, int y, int width, int height,bool full
     textures->addTexture("plains-tiles","assets/Plains-Sheet.png");
     textures->addTexture("desert-tiles","assets/Desert-Sheet.png");
     textures->addTexture("dungeon-tiles","assets/Dungeon-Sheet.png");
+    textures->addTexture("wall-tiles","assets/Kingdom-Sheet.png");
+    textures->addTexture("FortressV1-tiles","assets/FortressV1-Sheet.png");
+    textures->addTexture("BlacksmithV0-tiles","assets/BlacksmithV0-Sheet.png");
+    textures->addTexture("BlacksmithV1-tiles","assets/BlacksmithV1-Sheet.png");
+    textures->addTexture("MageTowerV0-tiles","assets/MageTowerV0-Sheet.png");
+    textures->addTexture("MageTowerV1-tiles","assets/MageTowerV1-Sheet.png");
+    textures->addTexture("WitchCabinV0-tiles","assets/WitchCabinV0-Sheet.png");
+    textures->addTexture("WitchCabinV1-tiles","assets/WitchCabinV1-Sheet.png");
+    textures->addTexture("TavernV0-tiles","assets/TavernV0-Sheet.png");
+    textures->addTexture("TavernV1-tiles","assets/TavernV1-Sheet.png");
+    textures->addTexture("WellV0-tiles","assets/WellV0-Sheet.png");
+    textures->addTexture("ChurchV0-tiles","assets/ChurchV0-Sheet.png");
+    textures->addTexture("HouseV0-tiles","assets/HouseV0-Sheet.png");
+    textures->addTexture("HouseV1-tiles","assets/HouseV1-Sheet.png");
+    textures->addTexture("HouseV2-tiles","assets/HouseV2-Sheet.png");
     auto& menu(manager.addEntity());
     menu.addGroup(GroupMenus);
     menu.addComponent<MenuPositionComponent>(0,0,4);
@@ -157,7 +172,9 @@ void Game::loadLocal() {
         if (temporary) {
             for (i=ii;i<maxI;i++) {
                 for (j=jj;j<maxJ;j++) {
-                    addTileLocal(i+ConstantValues::localMapSizeH*d,j+ConstantValues::localMapSizeW*r,temporary->getTile(i,j));
+                    bool b=true;
+                    if ((j>((50-8)/2)) && (j < ((50-8)/2+4)+3) && i>50-9 && i<50-1 ) b=false;
+                    addTileLocal(i+ConstantValues::localMapSizeH*d,j+ConstantValues::localMapSizeW*r,temporary->getTile(i,j),b);
                 }
             }
         }
@@ -209,6 +226,7 @@ void Game::updatePos() {
         worldPosition->x=player->getComponent<SpriteComponent>().getDestx()/ConstantValues::worldTileW;
         worldPosition->y=player->getComponent<SpriteComponent>().getDesty()/ConstantValues::worldTileH;
     }
+    //if (mapa->getTile(worldPosition->y,worldPosition->x)>2) mapa->getLocalMap(worldPosition->x,worldPosition->y)->print(); //prints local map to check for bugs
 }
 
 void Game::updateCam() {
@@ -234,41 +252,179 @@ void Game::addTileWorld(float x,float y,int mos) {
     tile.addGroup(GroupWorldMap);
 }
 
-void Game::addTileLocal(float x,float y,std::pair<char,int> type) {
-    int r1,r2,d;
+void Game::addTileLocal(float x,float y,std::pair<char,int> type,bool b) {
+    int r1,r2,d,h=0,w=0,v;
+    std::string path;
     auto& tile(manager.addEntity());
     r1=ConstantValues::localTileW;
     r2=ConstantValues::localTileH;
     d=32; //size inside sprite sheet
-    if (type.second>1) {
-        auto& tileO(manager.addEntity());
-        tileO.addComponent<TileComponent>(x,y,d,d,r2,r1,type);
-        switch (type.second) {
-            case 38:
-            case 39:
-            case 40:
-            case 2:
-            case 3:
-                tileO.addComponent<ColliderComponent>(0,0,64,64,"small object");
+    if (type.second>1 || ((type.first=='d' || type.first=='e') && type.second!=GROUND*-1 && type.second>1)) {
+        if (type.first=='d' || type.first=='e') {
+            if (type.second<GROUND*-1) {
+                auto& tileO(manager.addEntity());
+                tileO.addComponent<TileComponent>(x,y,d,d,r2,r1,type);
+                if (b) {
+                    tileO.addComponent<ColliderComponent>(0,0,64,64,"kingdom");
+                    type.second=1;
+                }
+                else {
+                    type.second=0;
+                }
                 tileO.addGroup(GroupCollider);
-                type.second=1;
-                break;
-            case 4:
-                tileO.addComponent<ColliderComponent>(40,40,24,24,"tree");
-                tileO.addGroup(GroupCollider);
-                type.second=0;
-                break;
-            case 5:
-                tileO.addComponent<ColliderComponent>(0,40,24,24,"tree");
-                tileO.addGroup(GroupCollider);
-                type.second=1;
-                break;
-            default:
-                tileO.addGroup(GroupCollider);
-                type.second=0;
-                break;
+            }
+            else {
+                switch (type.second) {
+                    case CASTELO*-1:
+                    h=10;
+                    w=10;
+                    path="FortressV1-tiles";
+                    b=true;
+                    break;
+                    case BLACKSMITH*-1:
+                    v=mapa->getSettlementBuildingV((int)x/ConstantValues::localMapSizeH,(int)y/ConstantValues::localMapSizeW,type.second*-1);
+                    switch (v) {
+                        case 0:
+                        h=4;
+                        w=3;
+                        path="BlacksmithV0-tiles";
+                        break;
+                        case 1:
+                        h=4;
+                        w=6;
+                        path="BlacksmithV1-tiles";
+                        break;
+                    }
+                    break;
+                    case MAGETOWER*-1:
+                    v=mapa->getSettlementBuildingV((int)x/ConstantValues::localMapSizeH,(int)y/ConstantValues::localMapSizeW,type.second*-1);
+                    switch (v) {
+                        case 0:
+                        h=5;
+                        w=3;
+                        path="MageTowerV0-tiles";
+                        break;
+                        case 1:
+                        h=6;
+                        w=5;
+                        path="MageTowerV1-tiles";
+                        break;
+                    }
+                    break;
+                    case WITCHCABIN*-1:
+                    v=mapa->getSettlementBuildingV((int)x/ConstantValues::localMapSizeH,(int)y/ConstantValues::localMapSizeW,type.second*-1);
+                    switch (v) {
+                        case 0:
+                        h=4;
+                        w=3;
+                        path="WitchCabinV0-tiles";
+                        break;
+                        case 1:
+                        h=4;
+                        w=5;
+                        path="WitchCabinV1-tiles";
+                        break;
+                    }
+                    break;
+                    case TAVERN*-1:
+                    v=mapa->getSettlementBuildingV((int)x/ConstantValues::localMapSizeH,(int)y/ConstantValues::localMapSizeW,type.second*-1);
+                    switch (v) {
+                        case 0:
+                        h=4;
+                        w=7;
+                        path="TavernV0-tiles";
+                        break;
+                        case 1:
+                        h=4;
+                        w=7;
+                        path="TavernV1-tiles";
+                        break;
+                    }
+                    break;
+                    case WELL*-1:
+                    v=mapa->getSettlementBuildingV((int)x/ConstantValues::localMapSizeH,(int)y/ConstantValues::localMapSizeW,type.second*-1);
+                    switch (v) {
+                        case 0:
+                        h=2;
+                        w=2;
+                        path="WellV0-tiles";
+                        break;
+                    }
+                    break;
+                    case CHURCH*-1:
+                    v=mapa->getSettlementBuildingV((int)x/ConstantValues::localMapSizeH,(int)y/ConstantValues::localMapSizeW,type.second*-1);
+                    switch (v) {
+                        case 0:
+                        h=6;
+                        w=3;
+                        path="ChurchV0-tiles";
+                        break;
+                    }
+                    break;
+                    default:
+                    if (type.second==GROUND*-1) break;
+                    v=mapa->getSettlementBuildingV((int)x/ConstantValues::localMapSizeH,(int)y/ConstantValues::localMapSizeW,type.second*-1);
+                    switch (v) {
+                        case 0:
+                        h=3;
+                        w=3;
+                        path="HouseV0-tiles";
+                        break;
+                        case 1:
+                        h=3;
+                        w=5;
+                        path="HouseV1-tiles";
+                        break;
+                        case 2:
+                        h=4;
+                        w=6;
+                        path="HouseV2-tiles";
+                        break;
+                    }
+                    break;
+                }
+                for (int i=0;i<h;i++) {
+                    for (int j=0;j<w;j++) {
+                        auto& tilep(manager.addEntity());
+                        tilep.addComponent<TileComponent>(x+i,y+j,d,d,r2,r1,path,i*w+j);
+                        tilep.addComponent<ColliderComponent>(0,0,64,64,"kingdom");
+                        tilep.addGroup(GroupCollider);
+                        type.second=1;
+                    }
+                }
+            }
+        }
+        else {
+            auto& tileO(manager.addEntity());
+            tileO.addComponent<TileComponent>(x,y,d,d,r2,r1,type);
+            switch (type.second) {
+                case 38:
+                case 39:
+                case 40:
+                case 2:
+                case 3:
+                    tileO.addComponent<ColliderComponent>(0,0,64,64,"small object");
+                    tileO.addGroup(GroupCollider);
+                    type.second=1;
+                    break;
+                case 4:
+                    tileO.addComponent<ColliderComponent>(40,40,24,24,"tree");
+                    tileO.addGroup(GroupCollider);
+                    type.second=0;
+                    break;
+                case 5:
+                    tileO.addComponent<ColliderComponent>(0,40,24,24,"tree");
+                    tileO.addGroup(GroupCollider);
+                    type.second=1;
+                    break;
+                default:
+                    tileO.addGroup(GroupCollider);
+                    type.second=0;
+                    break;
+            }
         }
     }
+    if (((type.first=='d' || type.first=='e') && type.second==GROUND*-1)) type.second=1;
     tile.addComponent<TileComponent>(x,y,d,d,r2,r1,type);
     tile.addGroup(GroupLocalMap);
 }
@@ -284,9 +440,11 @@ void Game::addTileInside(float x,float y,int mos) {
         auto& tileO(manager.addEntity());
         tileO.addComponent<TileComponent>(x,y,d,d,r2,r1,false,mos);
         switch (mos) {
-            case 5:
             case 6:
-                tileO.addComponent<ColliderComponent>(0,0,64,64,"bottom corner");
+                tileO.addComponent<ColliderComponent>(29,16,35,48,"bottom right corner");
+            break;
+            case 5:
+                tileO.addComponent<ColliderComponent>(0,16,35,48,"bottom left corner");
             break;
             case 8:
                 tileO.addComponent<ColliderComponent>(0,48,64,16,"wall horizontal");

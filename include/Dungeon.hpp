@@ -10,10 +10,10 @@
 #define BOTTOMLEFTCORNER -5
 #define LEFTWALL -7
 #define BOTTOMWALL -8
-#define RIGHTDOWNCORNER -11 // -11 e -17
-#define DOWNLEFTCORNER -10 // -10 e -15
-#define LEFTUPCORNER -12 // -12 e -14
-#define UPRIGHTCORNER -13 // -13 e -16
+#define RIGHTDOWNCORNER -11 
+#define DOWNLEFTCORNER -10 
+#define LEFTUPCORNER -12 
+#define UPRIGHTCORNER -13 
 
 double distanceBetweenPoints(int x1,int y1,int x2,int y2);
 

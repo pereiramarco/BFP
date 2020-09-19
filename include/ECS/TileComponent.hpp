@@ -71,10 +71,29 @@ class TileComponent : public Component {
             case 'b':
                 path="plains-tiles";
                 break;
+            case 'd':
+            case 'e':
+                path="wall-tiles";
+                break;
             default:
                 break;
         }
         src.x=32*type.second;
+    }
+
+    TileComponent(float x,float y,int sH,int sW,int dH,int dW,std::string pathh,int sprite) {
+        world=false;
+        position.x=y*dH;
+        position.y=x*dW;
+        dest.y=x*dW;
+        dest.x=y*dH;
+        dest.w=dW;
+        dest.h=dH;
+        src.w=sW;
+        src.h=sH;
+        src.y=0;
+        src.x=32*sprite;
+        path=pathh;
     }
 
     void init() {

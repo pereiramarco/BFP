@@ -39,11 +39,21 @@ LocalMap::LocalMap(std::string path,std::map<char,SDL_Texture*>text) {
 }
 
 std::pair<char,int> LocalMap::getTile(int i,int j) {
-    return mapa[i][j];
+    std::pair<char,int> p =mapa[i][j];
+    if (p.second<0) p.second*=-1;
+    return p;
 }
 
 void LocalMap::setTile(int i,int j,std::pair<char,int> par) {
     this->mapa[i][j]=par;
+}
+
+void LocalMap::setTileMap(std::pair<char,int>**mapaa) {
+    for (int i=0;i<50;i++) {
+        free(mapa[i]);
+    }
+    free(mapa);
+    mapa=mapaa;
 }
 
 void LocalMap::randomizeTile(char type0,char type1,char type2,char type3,char type4) {
@@ -56,16 +66,16 @@ void LocalMap::randomizeTile(char type0,char type1,char type2,char type3,char ty
                         mapa[i][j].first=type0=='f'?'b':type0;
                         break;
                     case '1':
-                        mapa[i][j].first=type1=='f'?'b':type1;
+                        mapa[i][j].first=type1>'c'?'b':type1;
                         break;
                     case '2':
-                        mapa[i][j].first=type2=='f'?'b':type2;
+                        mapa[i][j].first=type2>'c'?'b':type2;
                         break;
                     case '3':
-                        mapa[i][j].first=type3=='f'?'b':type3;
+                        mapa[i][j].first=type3>'c'?'b':type3;
                         break;
                     case '4':
-                        mapa[i][j].first=type4=='f'?'b':type4;
+                        mapa[i][j].first=type4>'c'?'b':type4;
                         break;
                 }
             }
@@ -98,4 +108,19 @@ void LocalMap::randomizeTile(char type0,char type1,char type2,char type3,char ty
             }
         }
     }
+}
+
+void LocalMap::print() {
+    int i,j;
+    for (i=0;i<50;i++) {
+        for (j=0;j<50;j++) {
+            if (mapa[i][j].second==-1) printf("  ");
+            else if (mapa[i][j].second>9) printf("%c ",mapa[i][j].second+55);
+            else if (mapa[i][j].second<-9) printf("%c ",mapa[i][j].second*-1+55);
+            else if (mapa[i][j].second<0) printf("%d ",mapa[i][j].second*-1);
+            else printf("%d ",mapa[i][j].second);
+        }
+        puts("");
+    }
+    puts("");
 }

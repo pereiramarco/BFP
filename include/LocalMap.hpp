@@ -22,6 +22,8 @@ public:
     void randomizeTile(char type0,char type1,char type2,char type3,char type4);
     std::pair<char,int> getTile(int i,int j);
     void setTile(int i,int j,std::pair<char,int> par);
+    void setTileMap(std::pair<char,int>**mapaa);
+    void print();
 };
 
 

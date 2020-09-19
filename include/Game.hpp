@@ -28,7 +28,7 @@ public:
     void loadDungeon();
     void updateCollisions(Vector2D playerpos,Vector2D localPos,Vector2D worldPos);
     void checkInteractions();
-    void addTileLocal(float x,float y,std::pair<char,int> type);
+    void addTileLocal(float x,float y,std::pair<char,int> type,bool b);
     void addTileInside(float x,float y,int mos);
 
     static void addTileWorld(float x,float y,int tile);
