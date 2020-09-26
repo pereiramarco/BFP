@@ -10,3 +10,4 @@
 #include "TileComponent.hpp"
 #include "ColliderComponent.hpp"
 #include "OverlapComponent.hpp"
+#include "AttributesComponent.hpp"

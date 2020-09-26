@@ -24,7 +24,8 @@ enum groupLabels : std::size_t {
     GroupPlayers,
     GroupEnemies,
     GroupMenus,
-    GroupCollider
+    GroupCollider,
+    GroupUI
 };
 
 Game::Game() {
@@ -53,7 +54,7 @@ void Game::init(const char* title, int x, int y, int width, int height,bool full
     textures->addTexture("main-menu","assets/Main-Menu-Sheet.png");
     textures->addTexture("world-tiles","assets/Tiles-Sheet.png");
     textures->addTexture("square","assets/Portrait.png");
-    textures->addTexture("hairy-dude","assets/Male 02-2.png");
+    textures->addTexture("hairy-dude","assets/Template-Dude.png");
     textures->addTexture("beach-tiles","assets/Beach-Sheet.png");
     textures->addTexture("water-tiles","assets/Water-Sheet.png");
     textures->addTexture("plains-tiles","assets/Plains-Sheet.png");
@@ -74,6 +75,12 @@ void Game::init(const char* title, int x, int y, int width, int height,bool full
     textures->addTexture("HouseV0-tiles","assets/HouseV0-Sheet.png");
     textures->addTexture("HouseV1-tiles","assets/HouseV1-Sheet.png");
     textures->addTexture("HouseV2-tiles","assets/HouseV2-Sheet.png");
+    textures->addTexture("UIFrame","assets/GeneralUIFrame.png");
+    textures->addTexture("HealthBar","assets/HealthBar.png");
+    textures->addTexture("ManaBar","assets/ManaBar.png");
+    textures->addTexture("StaminaBar","assets/StaminaBar.png");
+    textures->addTexture("Numbers","assets/numbers.png");
+    textures->addTexture("XPBar","assets/XPBar.png");
     auto& menu(manager.addEntity());
     menu.addGroup(GroupMenus);
     menu.addComponent<MenuPositionComponent>(0,0,4);
@@ -83,6 +90,117 @@ void Game::init(const char* title, int x, int y, int width, int height,bool full
 
 void Game::initSave(std::string savename) {
     mapa = new Mapa(renderer,ConstantValues::mapH,ConstantValues::mapW);
+}
+
+void Game::initUI() {
+    SDL_Rect r1,r2;
+    auto& HealthBar(manager.addEntity());
+    r1.x=0;
+    r1.y=0;
+    r1.w=160;
+    r1.h=16;
+    r2.x=ConstantValues::UIFRAMEx+57*2;//POSX
+    r2.y=ConstantValues::UIFRAMEy;//POSY
+    r2.w=2*160;
+    r2.h=2*16;
+    HealthBar.addComponent<SpriteComponent>("HealthBar",false,r1,r2);
+    HealthBar.addGroup(GroupUI);
+    auto& ManaBar(manager.addEntity());
+    r1.w=160;
+    r1.h=16;
+    r2.x=ConstantValues::UIFRAMEx+62*2;//POSX
+    r2.y=ConstantValues::UIFRAMEy+16*2;//POSY
+    r2.w=2*160;
+    r2.h=2*16;
+    ManaBar.addComponent<SpriteComponent>("ManaBar",false,r1,r2);
+    ManaBar.addGroup(GroupUI);
+    auto& StaminaBar(manager.addEntity());
+    r1.w=160;
+    r1.h=16;
+    r2.x=ConstantValues::UIFRAMEx+59*2;//POSX
+    r2.y=ConstantValues::UIFRAMEy+32*2;//POSY
+    r2.w=2*160;
+    r2.h=2*16;
+    StaminaBar.addComponent<SpriteComponent>("StaminaBar",false,r1,r2);
+    StaminaBar.addGroup(GroupUI);
+
+    auto& LevelProgressTopRight(manager.addEntity());
+    r1.x=32;
+    r1.y=0;
+    r1.w=31;
+    r1.h=31;
+    r2.x=ConstantValues::UIFRAMEx+32*2;
+    r2.y=ConstantValues::UIFRAMEy;
+    r2.w=31*2;
+    r2.h=31*2;
+    LevelProgressTopRight.addComponent<SpriteComponent>("XPBar",false,r1,r2);
+    LevelProgressTopRight.addGroup(GroupUI);
+
+    auto& LevelProgressBottomRight(manager.addEntity());
+    r1.x=32;
+    r1.y=32;
+    r1.w=31;
+    r1.h=31;
+    r2.x=ConstantValues::UIFRAMEx+32*2;
+    r2.y=ConstantValues::UIFRAMEy+32*2;
+    r2.w=31*2;
+    r2.h=31*2;
+    LevelProgressBottomRight.addComponent<SpriteComponent>("XPBar",false,r1,r2);
+    LevelProgressBottomRight.addGroup(GroupUI);
+
+    auto& LevelProgressBottomLeft(manager.addEntity());
+    r1.x=0;
+    r1.y=32;
+    r1.w=31;
+    r1.h=31;
+    r2.x=ConstantValues::UIFRAMEx;
+    r2.y=ConstantValues::UIFRAMEy+32*2;
+    r2.w=31*2;
+    r2.h=31*2;
+    LevelProgressBottomLeft.addComponent<SpriteComponent>("XPBar",false,r1,r2);
+    LevelProgressBottomLeft.addGroup(GroupUI);
+
+    auto& LevelProgressTopLeft(manager.addEntity());
+    r1.x=0;
+    r1.y=0;
+    r1.w=31;
+    r1.h=31;
+    r2.x=ConstantValues::UIFRAMEx;
+    r2.y=ConstantValues::UIFRAMEy;
+    r2.w=31*2;
+    r2.h=31*2;
+    LevelProgressTopLeft.addComponent<SpriteComponent>("XPBar",false,r1,r2);
+    LevelProgressTopLeft.addGroup(GroupUI);
+
+    auto& UIFrame(manager.addEntity());
+    r1.w=224;
+    r1.h=64;
+    r2.x=ConstantValues::UIFRAMEx;//POSX
+    r2.y=ConstantValues::UIFRAMEy;//POSY
+    r2.w=2*224;
+    r2.h=2*64;
+    UIFrame.addComponent<SpriteComponent>("UIFrame",false,r1,r2);
+    UIFrame.addGroup(GroupUI);
+
+    auto& LevelDigitOne(manager.addEntity());
+    r1.w=16;
+    r1.h=16;
+    r2.x=ConstantValues::UIFRAMEx+6*2;
+    r2.y=ConstantValues::UIFRAMEy+26*2;
+    r2.w=32;
+    r2.h=32;
+    LevelDigitOne.addComponent<SpriteComponent>("Numbers",false,r1,r2);
+    LevelDigitOne.addGroup(GroupUI);
+    
+    auto& LevelDigitTwo(manager.addEntity());
+    r2.x=ConstantValues::UIFRAMEx+22*2;
+    LevelDigitTwo.addComponent<SpriteComponent>("Numbers",false,r1,r2);
+    LevelDigitTwo.addGroup(GroupUI);
+
+    auto& LevelDigitThree(manager.addEntity());
+    r2.x=ConstantValues::UIFRAMEx+38*2;
+    LevelDigitThree.addComponent<SpriteComponent>("Numbers",false,r1,r2);
+    LevelDigitThree.addGroup(GroupUI);
 }
 
 void Game::loadLocal() {
@@ -105,7 +223,7 @@ void Game::loadLocal() {
             break;
             case 1:
                 if (worldPosition->x<=0) break;
-                //puts("loading top center");
+                //puts("loading center left");
                 jj=35;
                 r=worldPosition->x-1;
                 d=worldPosition->y;
@@ -113,8 +231,8 @@ void Game::loadLocal() {
             break;
             case 2:
                 if (worldPosition->x<=0 || worldPosition->y>=ConstantValues::mapH-1) break;
-                //puts("loading top right");
-                maxI=16;
+                //puts("loading bottom left");
+                maxI=15;
                 jj=35;
                 r=worldPosition->x-1;
                 d=worldPosition->y+1;
@@ -122,7 +240,7 @@ void Game::loadLocal() {
             break;
             case 3:
                 if (worldPosition->y<=0) break;
-                //puts("loading center left");
+                //puts("loading top center");
                 ii=35;
                 r=worldPosition->x;
                 d=worldPosition->y-1;
@@ -136,7 +254,7 @@ void Game::loadLocal() {
             break;
             case 5:
                 if (worldPosition->y>=ConstantValues::mapH-1) break;
-                //puts("loading center right");
+                //puts("loading bottom center");
                 maxI=15;
                 r=worldPosition->x;
                 d=worldPosition->y+1;
@@ -144,17 +262,17 @@ void Game::loadLocal() {
             break;
             case 6:
                 if (worldPosition->x>=ConstantValues::mapW-1 || worldPosition->y<=0) break;
-                //puts("loading bottom left");
+                //puts("loading top right");
                 ii=35;
-                maxJ=16;
+                maxJ=17;
                 r=worldPosition->x+1;
                 d=worldPosition->y-1;
                 temporary = mapa->getLocalMap(worldPosition->x+1,worldPosition->y-1);
             break;
             case 7:
                 if (worldPosition->x>=ConstantValues::mapW-1) break;
-                //puts("loading bottom center");
-                maxJ=16;
+                //puts("loading center right");
+                maxJ=17;
                 r=worldPosition->x+1;
                 d=worldPosition->y;
                 temporary = mapa->getLocalMap(worldPosition->x+1,worldPosition->y);
@@ -163,17 +281,18 @@ void Game::loadLocal() {
                 if (worldPosition->x>=ConstantValues::mapW-1 || worldPosition->y>=ConstantValues::mapH-1) break;
                 //puts("loading bottom right");
                 maxI=15;
-                maxJ=16;
+                maxJ=17;
                 r=worldPosition->x+1;
                 d=worldPosition->y+1;
                 temporary = mapa->getLocalMap(worldPosition->x+1,worldPosition->y+1);
             break;
         }
+        bool b=true;
         if (temporary) {
             for (i=ii;i<maxI;i++) {
                 for (j=jj;j<maxJ;j++) {
-                    bool b=true;
                     if ((j>((50-8)/2)) && (j < ((50-8)/2+4)+3) && i>50-9 && i<50-1 ) b=false;
+                    else b=true;
                     addTileLocal(i+ConstantValues::localMapSizeH*d,j+ConstantValues::localMapSizeW*r,temporary->getTile(i,j),b);
                 }
             }
@@ -539,6 +658,97 @@ void Game::checkInteractions() {
     }
 }
 
+void Game::updateUI() {
+    auto r=manager.getGroup(GroupUI);
+    int it=0,lvl,fD,sD,tD;
+    AttributesComponent a = player->getComponent<AttributesComponent>();
+    float h=(float)a.getAttribute(1)/a.getAttribute(0);
+    float s=(float)a.getAttribute(3)/a.getAttribute(2);
+    float m=(float)a.getAttribute(5)/a.getAttribute(4);
+    float x=(float)a.getAttribute(7)/a.getAttribute(6);
+    lvl = a.getAttribute(8);
+    fD=lvl/100;
+    lvl%=100;
+    sD=lvl/10;
+    lvl%=10;
+    tD=lvl;
+    for (auto&i : r) {
+        switch (it) {
+            case 0:
+            i->getComponent<SpriteComponent>().setWidthPercentage(h);
+            break;
+            case 1:
+            i->getComponent<SpriteComponent>().setWidthPercentage(m);
+            break;
+            case 2:
+            i->getComponent<SpriteComponent>().setWidthPercentage(s);
+            break;
+            case 3:
+            if (x<0.25) {
+                if (x<0.13) {
+                    i->getComponent<SpriteComponent>().setWidthPercentage((x*((float)25/31))/0.12);
+                    i->getComponent<SpriteComponent>().setHeightPercentage(0.5);
+                }
+                else {
+                    i->getComponent<SpriteComponent>().setHeightPercentage(0.5+(x-0.13)*0.5/0.12);
+                }
+            }
+            break;
+            case 4:
+            if (x>0.25) {
+                if (x<0.5) {
+                    if (x<0.38) {
+                        i->getComponent<SpriteComponent>().setHeightPercentage((x-0.25)*0.5/0.12);
+                    }
+                    else {
+                        i->getComponent<SpriteComponent>().setXOverhead((1-(x-0.38)*(1/0.12))*23);
+                    }
+                }
+            }
+            else i->getComponent<SpriteComponent>().setWidthPercentage(0);
+            break;
+            case 5:
+            if (x>0.5) {
+                if (x<0.75) {
+                    if (x<0.63) {
+                        i->getComponent<SpriteComponent>().setYOverhead(16);
+                        i->getComponent<SpriteComponent>().setXOverhead(7+(1-(x-0.5)*(1/0.12))*24);
+                    }
+                    else {
+                        i->getComponent<SpriteComponent>().setYOverhead(16-((x-0.63)*(1/0.12)*16));
+                    }
+                }
+            }
+            else i->getComponent<SpriteComponent>().setWidthPercentage(0);
+            break;
+            case 6:
+            if (x>0.75) {
+                if (x<1) {
+                    if (x<0.88) {
+                        i->getComponent<SpriteComponent>().setYOverhead(16+(1-(x-0.75)*(1/0.12))*16);
+                    }
+                    else {
+                        i->getComponent<SpriteComponent>().setWidthPercentage((float)7/31+(x-0.88)*(((float)24/31)/0.12));
+                    }
+                }
+
+            }
+            else i->getComponent<SpriteComponent>().setWidthPercentage(0);
+            break;
+            case 8:
+            i->getComponent<SpriteComponent>().setSrc(0,fD*16,0);
+            break;
+            case 9:
+            i->getComponent<SpriteComponent>().setSrc(0,sD*16,0);
+            break;
+            case 10:
+            i->getComponent<SpriteComponent>().setSrc(0,tD*16,0);
+            break;
+        }
+        it++;
+    }
+}
+
 void Game::render() {
     auto tilesWorld = manager.getGroup(GroupWorldMap);
     auto tilesLocal = manager.getGroup(GroupLocalMap);
@@ -546,6 +756,7 @@ void Game::render() {
     auto enemies = manager.getGroup(GroupEnemies);
     auto menus = manager.getGroup(GroupMenus);
     auto colliders = manager.getGroup(GroupCollider);
+    auto ui = manager.getGroup(GroupUI);
     SDL_RenderClear(renderer);
     for (auto& i : menus) {
         i->draw();
@@ -572,6 +783,9 @@ void Game::render() {
             i->draw();
         }
     }
+    for (auto&i : ui) {
+        i->draw();
+    }
     SDL_RenderPresent(renderer);
 }
 
@@ -589,6 +803,7 @@ void Game::handleinput() {
 void Game::update() {
     //printf("Local: (%f,%f)\nWorld: (%f,%f)\n",Game::localPosition->x,Game::localPosition->y,Game::worldPosition->x,Game::worldPosition->y);
     if (statb4!=stat) {
+        if ((statb4==3 && stat!=5) ||(statb4==5 && stat!=3)) manager.delGroup(GroupUI); //deletes the UI
         if (stat==1) {
             auto& menu(manager.addEntity());
             menu.addGroup(GroupMenus);
@@ -622,15 +837,18 @@ void Game::update() {
             //printf("WorldPosition x: %f y:%f\nLocalPosition x: %f y:%f\nCamera x:%d y:%d\n",worldPosition->x,worldPosition->y,Game::localPosition->x,Game::localPosition->y,camera.x,camera.y);
             auto& oldPlayer(manager.addEntity());
             oldPlayer.addComponent<TransformComponent>();
-            oldPlayer.addComponent<SpriteComponent>("hairy-dude");
-            oldPlayer.addComponent<KeyboardController>();
+            oldPlayer.addComponent<SpriteComponent>("hairy-dude",true);
+            oldPlayer.getComponent<SpriteComponent>().addStandardAnimations();
             oldPlayer.addComponent<OverlapComponent>(64,50);
             oldPlayer.addComponent<ColliderComponent>(17,50,30,14,"player");
+            oldPlayer.addComponent<AttributesComponent>(100,50,100,75,100,22,100,0,0);
+            oldPlayer.addComponent<KeyboardController>();
             oldPlayer.getComponent<TransformComponent>().position.x=((int)worldPosition->x)*50*64+ConstantValues::screenSizeW/2;
             oldPlayer.getComponent<TransformComponent>().position.y=((int)worldPosition->y)*50*64+ConstantValues::screenSizeH/2;
             oldPlayer.addGroup(GroupPlayers);
             player = &oldPlayer;
             loadLocal();
+            initUI();
         }
         else if (stat==4) {
         }
@@ -651,6 +869,7 @@ void Game::update() {
     manager.refresh();
     manager.update();
     if ((stat==3 || stat==5) && player) {
+        updateUI();
         updateCollisions(playerpos,localPos,worldPos);
         checkInteractions();
     }

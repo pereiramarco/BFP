@@ -14,4 +14,6 @@ class ConstantValues {
         static const int worldTileH=24;
         static constexpr float playerLocalPosX=screenSizeW/(2*localTileW);
         static constexpr float playerLocalPosY=screenSizeH/(2*localTileH);
+        static const int UIFRAMEx = 15;
+        static const int UIFRAMEy = 15;
 };
