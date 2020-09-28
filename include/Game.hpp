@@ -43,6 +43,7 @@ public:
     static Vector2D * worldPosition;
     static Vector2D * localPosition;
     static SDL_Rect camera;
+    static std::map<int,bool> KEYS;
 private:
     static Manager manager;
     static Mapa * mapa;

@@ -16,6 +16,7 @@ int Game::statb4=0;
 static int first=0;
 static Vector2D positionb4;
 int order=0;
+std::map<int,bool> Game::KEYS;
 SDL_Rect Game::camera = {0,0,(ConstantValues::mapW-1)*ConstantValues::localMapSizeW*ConstantValues::localTileW,(ConstantValues::mapH-1)*ConstantValues::localMapSizeH*ConstantValues::localTileH};
 
 enum groupLabels : std::size_t {
@@ -795,7 +796,11 @@ void Game::handleinput() {
         case SDL_QUIT:
             stat=0;
         break;
-        default:
+        case SDL_KEYDOWN:
+            KEYS[event.key.keysym.sym]=true;
+        break;
+        case SDL_KEYUP:
+            KEYS[event.key.keysym.sym]=false;
         break;
     }
 }
@@ -841,7 +846,7 @@ void Game::update() {
             oldPlayer.getComponent<SpriteComponent>().addStandardAnimations();
             oldPlayer.addComponent<OverlapComponent>(64,50);
             oldPlayer.addComponent<ColliderComponent>(17,50,30,14,"player");
-            oldPlayer.addComponent<AttributesComponent>(100,50,100,75,100,22,100,0,0);
+            oldPlayer.addComponent<AttributesComponent>(100,100,100,100,100,100,100,0,0,-0.3);
             oldPlayer.addComponent<KeyboardController>();
             oldPlayer.getComponent<TransformComponent>().position.x=((int)worldPosition->x)*50*64+ConstantValues::screenSizeW/2;
             oldPlayer.getComponent<TransformComponent>().position.y=((int)worldPosition->y)*50*64+ConstantValues::screenSizeH/2;

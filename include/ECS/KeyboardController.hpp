@@ -22,25 +22,49 @@ public:
     }
 
     void update() override {
+        bool r=false;
+        int shift=1+Game::KEYS[SDLK_LSHIFT];
+        if (Game::KEYS[SDLK_UP] && !Game::KEYS[SDLK_DOWN]) {
+            r=true;
+            transform->velocity.y=-1*shift;
+            sprite->play("up");
+            sprite->timesSpeed(shift);
+        }
+        else 
+            if (Game::KEYS[SDLK_DOWN] && !Game::KEYS[SDLK_UP]) {
+                r=true;
+                transform->velocity.y=1*shift;
+                sprite->play("down");
+                sprite->timesSpeed(shift);
+            }
+            else {
+                transform->velocity.y=0;
+            }
+        if (Game::KEYS[SDLK_LEFT] && !Game::KEYS[SDLK_RIGHT]) {
+            r=true;
+            transform->velocity.x=-1*shift;
+            sprite->play("left");
+            sprite->timesSpeed(shift);
+        }
+        else 
+            if (Game::KEYS[SDLK_RIGHT] && !Game::KEYS[SDLK_LEFT]) {
+                r=true;
+                transform->velocity.x=1*shift;
+                sprite->play("right");
+                sprite->timesSpeed(shift);
+            }
+        else {
+            transform->velocity.x=0;
+        }
+        if (!r) {
+            sprite->play("idle");
+        }
+        if (shift-1 && (transform->velocity.x || transform->velocity.y)) { //player is running
+            att->addToAttribute(3,att->getAttribute(9));
+        }
         if (Game::event.type == SDL_KEYDOWN) {
             switch (Game::event.key.keysym.sym)
             {
-            case SDLK_UP:
-                transform->velocity.y=-1;
-                sprite->play("up");
-                break;
-            case SDLK_DOWN:
-                transform->velocity.y=1;
-                sprite->play("down");
-                break;
-            case SDLK_LEFT:
-                transform->velocity.x=-1;
-                sprite->play("left");
-                break;
-            case SDLK_RIGHT:
-                transform->velocity.x=1;
-                sprite->play("right");
-                break;
             case SDLK_e:
                 interact=true;
                 break;
@@ -68,28 +92,6 @@ public:
                 break;
             case SDLK_x:
                 att->addToAttribute(7,10);
-                break;
-            }
-        }
-
-        if (Game::event.type == SDL_KEYUP) {
-            switch (Game::event.key.keysym.sym)
-            {
-            case SDLK_UP:
-                transform->velocity.y=0;
-                sprite->play("idle");
-                break;
-            case SDLK_DOWN:
-                transform->velocity.y=0;
-                sprite->play("idle");
-                break;
-            case SDLK_LEFT:
-                transform->velocity.x=0;
-                sprite->play("idle");
-                break;
-            case SDLK_RIGHT:
-                transform->velocity.x=0;
-                sprite->play("idle");
                 break;
             }
         }

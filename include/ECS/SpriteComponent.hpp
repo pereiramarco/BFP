@@ -210,4 +210,8 @@ public:
 		}
 	}
 
+	void timesSpeed(int r) {
+		speed/=r;
+	}
+
 };

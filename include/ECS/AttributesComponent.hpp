@@ -7,16 +7,17 @@ class AttributesComponent: public Component {
 
 private:
     int maxHealth;
-    int health;
+    float health;
     int maxStamina;
-    int stamina;
+    float stamina;
     int maxMana;
-    int mana;
+    float mana;
     int maxXP;
-    int xp;
+    float xp;
     int level;
+    float staminaSpendage;
 public:
-    AttributesComponent(int mH,int h,int mS,int s,int mM,int m,int mX,int x,int l) {
+    AttributesComponent(int mH,int h,int mS,int s,int mM,int m,int mX,int x,int l,float sS) {
         maxHealth=mH;
         health=h;
         maxStamina=mS;
@@ -26,9 +27,10 @@ public:
         maxXP=mX;
         xp=x;
         level=l;
+        staminaSpendage=sS;
     }
 
-    void setAttribute(int a,int v) {
+    void setAttribute(int a,float v) {
         switch (a) {
             case 0:
             maxHealth=v;
@@ -57,10 +59,13 @@ public:
             case 8:
             level=v;
             break;
+            case 9:
+            staminaSpendage=v;
+            break;
         }
     }
 
-    int getAttribute(int a) {
+    float getAttribute(int a) {
         switch (a) {
             case 0:
             return maxHealth;
@@ -89,11 +94,14 @@ public:
             case 8:
             return level;
             break;
+            case 9:
+            return staminaSpendage;
+            break;
         }
     return 0;
     }
 
-    void addToAttribute(int a,int v) {
+    void addToAttribute(int a,float v) {
         switch (a) {
             case 0:
             maxHealth+=v;
@@ -121,6 +129,9 @@ public:
             break;
             case 8:
             level+=v;
+            break;
+            case 9:
+            staminaSpendage+=v;
             break;
         }
     }
