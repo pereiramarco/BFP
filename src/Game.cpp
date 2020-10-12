@@ -207,7 +207,7 @@ void Game::initUI() {
 void Game::loadLocal() {
     manager.delGroup(GroupLocalMap);
     manager.delGroup(GroupCollider);
-    int r,d,i,ii,j,jj,maxI,maxJ;
+    int r,d,i,ii,j,jj,maxI,maxJ,posx=static_cast<int>(ConstantValues::playerLocalPosX),posy=static_cast<int>(ConstantValues::playerLocalPosY);
     LocalMap *temporary;
     for (int k=0;k<9;k++) {
         ii=0;jj=0;maxI=ConstantValues::localMapSizeH;maxJ=ConstantValues::localMapSizeW;
@@ -216,8 +216,8 @@ void Game::loadLocal() {
             case 0:
                 if (worldPosition->x<=0 || worldPosition->y<=0) break;
                 //puts("loading top left");
-                ii=35;
-                jj=35;
+                ii=ConstantValues::localMapSizeW-posx;
+                jj=ConstantValues::localMapSizeH-posx;
                 r=worldPosition->x-1;
                 d=worldPosition->y-1;
                 temporary = mapa->getLocalMap(worldPosition->x-1,worldPosition->y-1);
@@ -225,7 +225,7 @@ void Game::loadLocal() {
             case 1:
                 if (worldPosition->x<=0) break;
                 //puts("loading center left");
-                jj=35;
+                jj=ConstantValues::localMapSizeH-posx;
                 r=worldPosition->x-1;
                 d=worldPosition->y;
                 temporary = mapa->getLocalMap(worldPosition->x-1,worldPosition->y);
@@ -233,8 +233,8 @@ void Game::loadLocal() {
             case 2:
                 if (worldPosition->x<=0 || worldPosition->y>=ConstantValues::mapH-1) break;
                 //puts("loading bottom left");
-                maxI=15;
-                jj=35;
+                maxI=posx;
+                jj=ConstantValues::localMapSizeH-posx;
                 r=worldPosition->x-1;
                 d=worldPosition->y+1;
                 temporary = mapa->getLocalMap(worldPosition->x-1,worldPosition->y+1);
@@ -242,7 +242,7 @@ void Game::loadLocal() {
             case 3:
                 if (worldPosition->y<=0) break;
                 //puts("loading top center");
-                ii=35;
+                ii=ConstantValues::localMapSizeW-posx;
                 r=worldPosition->x;
                 d=worldPosition->y-1;
                 temporary = mapa->getLocalMap(worldPosition->x,worldPosition->y-1);
@@ -256,7 +256,7 @@ void Game::loadLocal() {
             case 5:
                 if (worldPosition->y>=ConstantValues::mapH-1) break;
                 //puts("loading bottom center");
-                maxI=15;
+                maxI=posx;
                 r=worldPosition->x;
                 d=worldPosition->y+1;
                 temporary = mapa->getLocalMap(worldPosition->x,worldPosition->y+1);
@@ -264,8 +264,8 @@ void Game::loadLocal() {
             case 6:
                 if (worldPosition->x>=ConstantValues::mapW-1 || worldPosition->y<=0) break;
                 //puts("loading top right");
-                ii=35;
-                maxJ=17;
+                ii=ConstantValues::localMapSizeW-posx;
+                maxJ=posx+128/ConstantValues::localTileH;
                 r=worldPosition->x+1;
                 d=worldPosition->y-1;
                 temporary = mapa->getLocalMap(worldPosition->x+1,worldPosition->y-1);
@@ -273,7 +273,7 @@ void Game::loadLocal() {
             case 7:
                 if (worldPosition->x>=ConstantValues::mapW-1) break;
                 //puts("loading center right");
-                maxJ=17;
+                maxJ=posx+128/ConstantValues::localTileH;
                 r=worldPosition->x+1;
                 d=worldPosition->y;
                 temporary = mapa->getLocalMap(worldPosition->x+1,worldPosition->y);
@@ -281,8 +281,8 @@ void Game::loadLocal() {
             case 8:
                 if (worldPosition->x>=ConstantValues::mapW-1 || worldPosition->y>=ConstantValues::mapH-1) break;
                 //puts("loading bottom right");
-                maxI=15;
-                maxJ=17;
+                maxI=posx;
+                maxJ=posx+128/ConstantValues::localTileH;
                 r=worldPosition->x+1;
                 d=worldPosition->y+1;
                 temporary = mapa->getLocalMap(worldPosition->x+1,worldPosition->y+1);
@@ -385,7 +385,7 @@ void Game::addTileLocal(float x,float y,std::pair<char,int> type,bool b) {
                 auto& tileO(manager.addEntity());
                 tileO.addComponent<TileComponent>(x,y,d,d,r2,r1,type);
                 if (b) {
-                    tileO.addComponent<ColliderComponent>(0,0,64,64,"kingdom");
+                    tileO.addComponent<ColliderComponent>(0,0,r1,r2,"kingdom");
                     type.second=1;
                 }
                 else {
@@ -507,7 +507,7 @@ void Game::addTileLocal(float x,float y,std::pair<char,int> type,bool b) {
                     for (int j=0;j<w;j++) {
                         auto& tilep(manager.addEntity());
                         tilep.addComponent<TileComponent>(x+i,y+j,d,d,r2,r1,path,i*w+j);
-                        tilep.addComponent<ColliderComponent>(0,0,64,64,"kingdom");
+                        tilep.addComponent<ColliderComponent>(0,0,r1,r2,"kingdom");
                         tilep.addGroup(GroupCollider);
                         type.second=1;
                     }
@@ -523,7 +523,7 @@ void Game::addTileLocal(float x,float y,std::pair<char,int> type,bool b) {
                 case 40:
                 case 2:
                 case 3:
-                    tileO.addComponent<ColliderComponent>(0,0,64,64,"small object");
+                    tileO.addComponent<ColliderComponent>(0,0,r1,r2,"small object");
                     tileO.addGroup(GroupCollider);
                     type.second=1;
                     break;
@@ -848,8 +848,8 @@ void Game::update() {
             oldPlayer.addComponent<ColliderComponent>(17,50,30,14,"player");
             oldPlayer.addComponent<AttributesComponent>(100,100,100,100,100,100,100,0,0,-0.3);
             oldPlayer.addComponent<KeyboardController>();
-            oldPlayer.getComponent<TransformComponent>().position.x=((int)worldPosition->x)*50*64+ConstantValues::screenSizeW/2;
-            oldPlayer.getComponent<TransformComponent>().position.y=((int)worldPosition->y)*50*64+ConstantValues::screenSizeH/2;
+            oldPlayer.getComponent<TransformComponent>().position.x=((int)worldPosition->x)*ConstantValues::localMapSizeW*ConstantValues::localTileW+ConstantValues::screenSizeW/2;
+            oldPlayer.getComponent<TransformComponent>().position.y=((int)worldPosition->y)*ConstantValues::localMapSizeH*ConstantValues::localTileH+ConstantValues::screenSizeH/2;
             oldPlayer.addGroup(GroupPlayers);
             player = &oldPlayer;
             loadLocal();

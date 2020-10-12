@@ -61,11 +61,14 @@ public:
 	}
 
 	void addStandardAnimations() {
-		addAnimation("idle",0,3,200);
-		addAnimation("down",1,3,200);
-		addAnimation("left",2,3,200);
-		addAnimation("right",3,3,200);
-		addAnimation("up",4,3,200);
+		addAnimation("idle-down",0,3,200);
+		addAnimation("idle-left",1,3,200);
+		addAnimation("idle-right",2,3,200);
+		addAnimation("idle-up",3,3,200);
+		addAnimation("down",4,3,200);
+		addAnimation("left",5,3,200);
+		addAnimation("right",6,3,200);
+		addAnimation("up",7,3,200);
 	}
 
 	void setUpdate(bool up) {
