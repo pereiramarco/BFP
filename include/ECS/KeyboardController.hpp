@@ -21,36 +21,18 @@ public:
         interact=false;
     }
 
-    void updateSentido() {
-        bool u=Game::KEYS[SDLK_UP],r=Game::KEYS[SDLK_RIGHT],d=Game::KEYS[SDLK_DOWN],l=Game::KEYS[SDLK_LEFT],b=true;
-        int s;
-        if (u && r) s=1;
-        else if (u && l) s=7;
-        else if (u) s=0;
-        else if (r && d) s=3;
-        else if (r) s=2;
-        else if (d && l) s=5;
-        else if (d) s=4;
-        else if (l) s=6;
-        else b=false;
-        if (b)
-            transform->sentido=s;
-    }
-
     void update() override {
         bool r=false;
         int shift=1+Game::KEYS[SDLK_LSHIFT];
         if (Game::KEYS[SDLK_UP] && !Game::KEYS[SDLK_DOWN]) {
             r=true;
             transform->velocity.y=-1*shift;
-            sprite->play("up");
             sprite->timesSpeed(shift);
         }
         else 
             if (Game::KEYS[SDLK_DOWN] && !Game::KEYS[SDLK_UP]) {
                 r=true;
                 transform->velocity.y=1*shift;
-                sprite->play("down");
                 sprite->timesSpeed(shift);
             }
             else {
@@ -59,28 +41,19 @@ public:
         if (Game::KEYS[SDLK_LEFT] && !Game::KEYS[SDLK_RIGHT]) {
             r=true;
             transform->velocity.x=-1*shift;
-            sprite->play("left");
             sprite->timesSpeed(shift);
         }
         else 
             if (Game::KEYS[SDLK_RIGHT] && !Game::KEYS[SDLK_LEFT]) {
                 r=true;
                 transform->velocity.x=1*shift;
-                sprite->play("right");
                 sprite->timesSpeed(shift);
             }
         else {
             transform->velocity.x=0;
         }
-        updateSentido();
-        if (!r) {
-            int s=transform->sentido;
-            if (s==0) sprite->play("idle-up");
-            else if (s==4) sprite->play("idle-down");
-            else if (s<4) sprite->play("idle-right");
-            else sprite->play("idle-left");
-        }
-        if (shift-1 && (transform->velocity.x || transform->velocity.y)) { //player is running
+        transform->updateSentido();
+        if (shift-1 && !transform->isVel0()) { //player is running
             att->addToAttribute(3,att->getAttribute(9));
         }
         if (Game::event.type == SDL_KEYDOWN) {

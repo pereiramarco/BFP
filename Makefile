@@ -1,5 +1,5 @@
 SDL_FLAG=-lSDL2 -lSDL2_image
-COMPONENTS = include/ECS/ECS.hpp include/ECS/Components.hpp include/ECS/TransformComponent.hpp include/ECS/SpriteComponent.hpp include/ECS/KeyboardController.hpp
+COMPONENTS = include/ECS/ECS.hpp include/ECS/Components.hpp include/ECS/TransformComponent.hpp include/ECS/SpriteComponent.hpp include/ECS/KeyboardController.hpp include/ECS/FollowPlayerComponent.hpp
 
 all: link
 

@@ -11,3 +11,4 @@
 #include "ColliderComponent.hpp"
 #include "OverlapComponent.hpp"
 #include "AttributesComponent.hpp"
+#include "FollowPlayerComponent.hpp"

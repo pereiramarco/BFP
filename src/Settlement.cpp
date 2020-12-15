@@ -341,7 +341,7 @@ void Settlement::addBuilding(int buildID) {
     else rh=2;
     if ((buildID==BLACKSMITH && version==1) || (buildID<CHURCH && version==2))
         rw=6;
-    else if ((buildID==WITCHCABIN && version==2) || (buildID<CHURCH && version==1) || (buildID==MAGETOWER && version==1))
+    else if ((buildID==WITCHCABIN && version==1) || (buildID<CHURCH && version==1) || (buildID==MAGETOWER && version==1))
         rw=5;
     else if (buildID==TAVERN)
         rw=7;

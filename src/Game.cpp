@@ -82,6 +82,8 @@ void Game::init(const char* title, int x, int y, int width, int height,bool full
     textures->addTexture("StaminaBar","assets/StaminaBar.png");
     textures->addTexture("Numbers","assets/numbers.png");
     textures->addTexture("XPBar","assets/XPBar.png");
+    textures->addTexture("Pumpkin-dude","assets/Pumpkin-dude.png");
+    textures->addTexture("Skeleton-dude","assets/Skeleton-dude.png");
     auto& menu(manager.addEntity());
     menu.addGroup(GroupMenus);
     menu.addComponent<MenuPositionComponent>(0,0,4);
@@ -808,6 +810,7 @@ void Game::handleinput() {
 void Game::update() {
     //printf("Local: (%f,%f)\nWorld: (%f,%f)\n",Game::localPosition->x,Game::localPosition->y,Game::worldPosition->x,Game::worldPosition->y);
     if (statb4!=stat) {
+        manager.delGroup(GroupEnemies);
         if ((statb4==3 && stat!=5) ||(statb4==5 && stat!=3)) manager.delGroup(GroupUI); //deletes the UI
         if (stat==1) {
             auto& menu(manager.addEntity());
@@ -852,6 +855,33 @@ void Game::update() {
             oldPlayer.getComponent<TransformComponent>().position.y=((int)worldPosition->y)*ConstantValues::localMapSizeH*ConstantValues::localTileH+ConstantValues::screenSizeH/2;
             oldPlayer.addGroup(GroupPlayers);
             player = &oldPlayer;
+            
+            auto& monster(manager.addEntity());
+            monster.addComponent<TransformComponent>();
+            monster.getComponent<TransformComponent>().setSpeed(8);
+            monster.addComponent<SpriteComponent>("Pumpkin-dude",true);
+            monster.getComponent<SpriteComponent>().addStandardAnimations();
+            monster.addComponent<OverlapComponent>(64,50);
+            monster.addComponent<ColliderComponent>(17,50,30,14,"player");
+            monster.addComponent<AttributesComponent>(100,100,100,100,100,100,100,0,0,-0.3);
+            monster.getComponent<TransformComponent>().position.x=((int)worldPosition->x)*ConstantValues::localMapSizeW*ConstantValues::localTileW+ConstantValues::screenSizeW/2;
+            monster.getComponent<TransformComponent>().position.y=((int)worldPosition->y)*ConstantValues::localMapSizeH*ConstantValues::localTileH+ConstantValues::screenSizeH/2;
+            monster.addComponent<FollowPlayerComponent>(&player->getComponent<TransformComponent>(),1,1);
+            monster.addGroup(GroupEnemies);
+
+            auto& monster2(manager.addEntity());
+            monster2.addComponent<TransformComponent>();
+            monster2.getComponent<TransformComponent>().setSpeed(8);
+            monster2.addComponent<SpriteComponent>("Skeleton-dude",true);
+            monster2.getComponent<SpriteComponent>().addStandardAnimations();
+            monster2.addComponent<OverlapComponent>(64,50);
+            monster2.addComponent<ColliderComponent>(17,50,30,14,"player");
+            monster2.addComponent<AttributesComponent>(100,100,100,100,100,100,100,0,0,-0.3);
+            monster2.getComponent<TransformComponent>().position.x=((int)worldPosition->x)*ConstantValues::localMapSizeW*ConstantValues::localTileW+ConstantValues::screenSizeW/2;
+            monster2.getComponent<TransformComponent>().position.y=((int)worldPosition->y)*ConstantValues::localMapSizeH*ConstantValues::localTileH+ConstantValues::screenSizeH/2;
+            monster2.addComponent<FollowPlayerComponent>(&player->getComponent<TransformComponent>(),-1,4);
+            monster2.addGroup(GroupEnemies);
+        
             loadLocal();
             initUI();
         }

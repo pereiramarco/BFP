@@ -144,6 +144,19 @@ public:
 	{
 		if (updating) {
 			if (animated) {
+            	int s=transform->sentido;
+				if (transform->isVelClose0()) {
+            		if (s==0) play("idle-down");
+            		else if (s==4) play("idle-up");
+            		else if (s<4) play("idle-right");
+            		else play("idle-left");
+        		}
+				else {
+					if (s==0) play("down");
+					else if (s<4) play("right");
+					else if (s==4) play("up");
+					else play("left");
+				}
 				srcRect.x= srcRect.w * static_cast<int>((SDL_GetTicks()/speed)%frames);
 				srcRect.y=index*srcRect.h;
 			}
