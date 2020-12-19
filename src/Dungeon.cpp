@@ -156,7 +156,7 @@ void Dungeon::doubleMap() {
 
 void Dungeon::randomizeRooms() {
     int r=1,p=0,i,j,k;
-    for (i=14;i<14+roomNumber;r=1,p=0,i++) {//deixei o 2 pra room final
+    for (i=ROOMSTART;i<ROOMSTART+roomNumber;r=1,p=0,i++) {//deixei o 2 pra room final
         while (r && p<15) {
             p++;
             r=0;
@@ -377,28 +377,43 @@ void Dungeon::polishDungeon() {
         }
     }
     map[entrance.second][entrance.first]=-19;
-    /*
-    puts("#####\npolished\n#####");
-        for (i=0;i<height*2;i++) {
-            for (j=0;j<width*2;j++) {
-                if (!map[i][j] || map[i][j]==-20) printf("  ");
-                else if (map[i][j]<-9) printf("%c ",map[i][j]*-1+55);
-                else if (map[i][j]<0) printf("%d ",map[i][j]*-1);
-                else printf("%d ",map[i][j]);
-            }
-            puts("");
-    }
-    */
 }
 
+void Dungeon::showDungeon() {
+    int i,j;
+    for (i=0;i<height*2;i++) {
+        for (j=0;j<width*2;j++) {
+            if (!map[i][j] || map[i][j]==-20) printf("  ");
+            else if (map[i][j]<-9) printf("%c ",map[i][j]*-1+55);
+            else if (map[i][j]<0) printf("%d ",map[i][j]*-1);
+            else printf("%d ",map[i][j]);
+        }
+        puts("");
+    }
+    printf("Number of Rooms: %d\n",roomNumber+1);
+}
 /*
+
 int main() {
+    
     for (int i=0;i<1;i++) {
         Dungeon* d = new Dungeon(100,60,30);// must be divisible by 2
         d->randomizeRooms();
         d->polishDungeon();
-        int r=d->roomNumber;
-        printf("Number of Rooms: %d\n",r+1);
+        d->addExtras();
+        d->showDungeon();
     }
 }
+
 */
+
+
+void Dungeon::addExtras() {
+    for (int i=0;i<height*2;i++) {
+        for (int j=0;j<width*2;j++) {
+            if (!map[i][j] && map[i-1][j]==-2 && map[i][j-1]!=-10 && map[i][j+1]!=-11 && rand()%10>7) 
+                map[i][j]=-14;
+        }
+    }
+
+}

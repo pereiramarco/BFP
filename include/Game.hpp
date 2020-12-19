@@ -26,7 +26,9 @@ public:
     void updateCam();
     void loadLocal();
     void loadDungeon();
-    void updateCollisions(Vector2D playerpos,Vector2D localPos,Vector2D worldPos);
+    void updateCollision(Entity * ent,int typeOfEnt,Vector2D lastPosition,Vector2D localPos,Vector2D worldPos);
+    void updateCollisions(Vector2D playerpos,Vector2D localPos,Vector2D worldPos,std::map<Entity*,Vector2D> enemiePos);
+    void updateOverlaps();
     void checkInteractions();
     void addTileLocal(float x,float y,std::pair<char,int> type,bool b);
     void addTileInside(float x,float y,int mos);

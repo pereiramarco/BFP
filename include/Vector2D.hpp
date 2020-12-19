@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 class Vector2D {
 public :
@@ -7,7 +8,8 @@ public :
 
     Vector2D();
     Vector2D(float x, float y);
-    
+    Vector2D copy();
+
     Vector2D& add(const Vector2D& v1);
     Vector2D& subtract(const Vector2D& v1);
     Vector2D& multiply(const Vector2D& v1);
@@ -27,4 +29,5 @@ public :
     Vector2D& operator/(const float& r);
 
     Vector2D& zero();
+    std::string toString();
 };

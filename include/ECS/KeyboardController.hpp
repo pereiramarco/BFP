@@ -22,16 +22,13 @@ public:
     }
 
     void update() override {
-        bool r=false;
         int shift=1+Game::KEYS[SDLK_LSHIFT];
         if (Game::KEYS[SDLK_UP] && !Game::KEYS[SDLK_DOWN]) {
-            r=true;
             transform->velocity.y=-1*shift;
             sprite->timesSpeed(shift);
         }
         else 
             if (Game::KEYS[SDLK_DOWN] && !Game::KEYS[SDLK_UP]) {
-                r=true;
                 transform->velocity.y=1*shift;
                 sprite->timesSpeed(shift);
             }
@@ -39,19 +36,17 @@ public:
                 transform->velocity.y=0;
             }
         if (Game::KEYS[SDLK_LEFT] && !Game::KEYS[SDLK_RIGHT]) {
-            r=true;
             transform->velocity.x=-1*shift;
             sprite->timesSpeed(shift);
         }
         else 
             if (Game::KEYS[SDLK_RIGHT] && !Game::KEYS[SDLK_LEFT]) {
-                r=true;
                 transform->velocity.x=1*shift;
                 sprite->timesSpeed(shift);
             }
-        else {
-            transform->velocity.x=0;
-        }
+            else {
+                transform->velocity.x=0;
+            }
         transform->updateSentido();
         if (shift-1 && !transform->isVel0()) { //player is running
             att->addToAttribute(3,att->getAttribute(9));

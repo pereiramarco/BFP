@@ -145,7 +145,7 @@ public:
 		if (updating) {
 			if (animated) {
             	int s=transform->sentido;
-				if (transform->isVelClose0()) {
+				if (transform->isVel0()) {
             		if (s==0) play("idle-down");
             		else if (s==4) play("idle-up");
             		else if (s<4) play("idle-right");

@@ -174,6 +174,7 @@ void Mapa::randomizeLocalMaps() {
                 Dungeon *d = new Dungeon(120,80,30);
                 d->randomizeRooms();
                 d->polishDungeon();
+                d->addExtras();
                 dungeons[p]=d;
             }
             if (worldMap[i][j]==3) {

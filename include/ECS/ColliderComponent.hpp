@@ -29,6 +29,20 @@ public:
         return collision;
     }
 
+    Vector2D getOverhead() {
+        return Vector2D(xOverHead,yOverHead);
+    }
+
+    void setXY(Vector2D xy) {
+        collision.x=xy.x;
+        collision.y=xy.y;
+    }
+
+    ColliderComponent copy() {
+        ColliderComponent c = ColliderComponent(xOverHead,yOverHead,width,height,tag);
+        return c;
+    }
+
     void init () override {
         if (!entity->hasComponent<TransformComponent>()) {
             entity->addComponent<TransformComponent>();

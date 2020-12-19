@@ -8,7 +8,7 @@ public:
     Vector2D position;
     Vector2D velocity;
     float speed;
-    int sentido=4; //0 north      //4 south
+    int sentido=0; //0 north      //4 south
                    //1 northeast  //5 southwest
                    //2 east       //6 west
                    //3 southeast  //7 northwest

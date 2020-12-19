@@ -2,6 +2,7 @@
 #include "../include/ECS/Components.hpp"
 #include "../include/ConstantValues.hpp"
 #include "../include/Collision.hpp"
+#include <unordered_set>
 
 SDL_Renderer* Game::renderer = nullptr;
 Entity* player = nullptr;
@@ -15,7 +16,7 @@ int Game::stat=0;
 int Game::statb4=0;
 static int first=0;
 static Vector2D positionb4;
-int order=0;
+std::unordered_set<Entity*> overlap;
 std::map<int,bool> Game::KEYS;
 SDL_Rect Game::camera = {0,0,(ConstantValues::mapW-1)*ConstantValues::localMapSizeW*ConstantValues::localTileW,(ConstantValues::mapH-1)*ConstantValues::localMapSizeH*ConstantValues::localTileH};
 
@@ -209,7 +210,7 @@ void Game::initUI() {
 void Game::loadLocal() {
     manager.delGroup(GroupLocalMap);
     manager.delGroup(GroupCollider);
-    int r,d,i,ii,j,jj,maxI,maxJ,posx=static_cast<int>(ConstantValues::playerLocalPosX),posy=static_cast<int>(ConstantValues::playerLocalPosY);
+    int r,d,i,ii,j,jj,maxI,maxJ,posx=static_cast<int>(ConstantValues::playerLocalPosX);
     LocalMap *temporary;
     for (int k=0;k<9;k++) {
         ii=0;jj=0;maxI=ConstantValues::localMapSizeH;maxJ=ConstantValues::localMapSizeW;
@@ -348,7 +349,6 @@ void Game::updatePos() {
         worldPosition->x=player->getComponent<SpriteComponent>().getDestx()/ConstantValues::worldTileW;
         worldPosition->y=player->getComponent<SpriteComponent>().getDesty()/ConstantValues::worldTileH;
     }
-    //if (mapa->getTile(worldPosition->y,worldPosition->x)>2) mapa->getLocalMap(worldPosition->x,worldPosition->y)->print(); //prints local map to check for bugs
 }
 
 void Game::updateCam() {
@@ -576,47 +576,30 @@ void Game::addTileInside(float x,float y,int mos) {
                 tileO.addComponent<ColliderComponent>(48,0,16,64,"wall right");
             break;
             case 7:
-            case 13:
+            case 11:
                 tileO.addComponent<ColliderComponent>(0,0,16,64,"wall left");
             break;
             case 10:
                 tileO.addComponent<ColliderComponent>(48,48,16,16,"bottom right corner");
             break;
-            case 11:
+            case 9:
                 tileO.addComponent<ColliderComponent>(0,48,16,16,"bottom left corner");
+            break;
+            case 13:
+                tileO.addComponent<ColliderComponent>(0,0,60,50,"chest");
             break;
         }
         tileO.addGroup(GroupCollider);
         mos=0;
     }
-    if (mos==20) mos=13;
+    if (mos==20) mos=ROOMSTART-1;
     tile.addComponent<TileComponent>(x,y,d,d,r2,r1,false,mos);
-    if (mos && mos!=13) {
+    if (mos && mos!=ROOMSTART-1) {
         tile.addComponent<ColliderComponent>(0,0,64,64,"wall top");
         tile.addGroup(GroupCollider);
     }
     else
         tile.addGroup(GroupLocalMap);
-}
-
-void Game::updateCollisions(Vector2D playerpos,Vector2D localPos,Vector2D worldPos) {
-    int shouldOverlap=0;
-    auto colliders = manager.getGroup(GroupCollider);
-    for (auto& i : colliders) {
-        if (!i->hasComponent<ColliderComponent>()) continue;
-        if (Collision::AABB(player->getComponent<OverlapComponent>().getRect(),i->getComponent<ColliderComponent>().getRect())) {
-            shouldOverlap=1;
-        }
-        if (Collision::AABB(player->getComponent<ColliderComponent>().getRect(),i->getComponent<ColliderComponent>().getRect())) {
-            localPosition->x = localPos.x;
-            localPosition->y = localPos.y;
-            worldPosition->x = worldPos.x;
-            worldPosition->y = worldPos.y;
-            player->getComponent<TransformComponent>().position=playerpos;
-            break;
-        }
-    }
-    order=shouldOverlap;
 }
 
 void Game::loadDungeon() {
@@ -630,6 +613,99 @@ void Game::loadDungeon() {
             int x=d->getTile(i,j);
             addTileInside(i,j,x);
         }       
+    }
+}
+
+void Game::updateCollision(Entity * ent,int typeOfEnt,Vector2D lastPosition,Vector2D localPos,Vector2D worldPos) {
+    int retry=0;
+    auto colliders = manager.getGroup(GroupCollider);
+    Vector2D entP = ent->getComponent<TransformComponent>().position.copy(),localPosB = localPosition->copy(),worldPosB = worldPosition->copy();
+    SDL_Rect entR = ent->getComponent<ColliderComponent>().getRect();
+    ColliderComponent cx = ent->getComponent<ColliderComponent>().copy();
+    ColliderComponent cy = cx.copy();
+    Vector2D oH = cx.getOverhead();
+    Vector2D ladoX = Vector2D(entP.x,lastPosition.y);
+    cx.setXY(ladoX.copy().operator+=(oH));
+    Vector2D ladoY = Vector2D(lastPosition.x,entP.y);
+    cy.setXY(ladoY.copy().operator+=(oH));
+    for (long unsigned int i=0;retry<3 && i<colliders.size();i++) {
+        Entity* col=colliders[i];
+        if (!col->hasComponent<ColliderComponent>()) continue;
+        SDL_Rect collC=col->getComponent<ColliderComponent>().getRect();
+        if (Collision::AABB(entR,collC)) {
+            i=0;
+            if (!retry) {
+                ent->getComponent<TransformComponent>().position=ladoX;
+            }
+            else 
+                if (retry==1) {
+                    ent->getComponent<TransformComponent>().position=ladoY;
+                }
+                else ent->getComponent<TransformComponent>().position=lastPosition;
+            ent->getComponent<ColliderComponent>().update();
+            entR=ent->getComponent<ColliderComponent>().getRect();
+            retry++;
+        }
+    }
+    if (typeOfEnt==1) {
+        switch (retry) {
+            case 1:
+                *localPosition=Vector2D(localPosB.x,localPos.y);
+                *worldPosition=Vector2D(worldPosB.x,worldPos.y);
+            break;
+            case 2:
+                *localPosition=Vector2D(localPos.x,localPosB.y);
+                *worldPosition=Vector2D(worldPos.x,worldPosB.y);
+            break;
+            case 3:
+                *localPosition=localPos;
+                *worldPosition=worldPos;
+            break;
+        }
+    }
+}
+
+void Game::updateCollisions(Vector2D playerpos,Vector2D localPos,Vector2D worldPos,std::map<Entity*,Vector2D> enemiesPos) {
+    updateCollision(player,1,playerpos,localPos,worldPos);
+    auto enemies = manager.getGroup(GroupEnemies);
+    for (auto& enem : enemies) {
+        updateCollision(enem,0,enemiesPos[enem],Vector2D(),Vector2D());
+    }
+}
+
+void Game::updateOverlaps() {
+    bool b=false;
+    overlap.clear();
+    auto colliders = manager.getGroup(GroupCollider);
+    auto enemies = manager.getGroup(GroupEnemies);
+    SDL_Rect playerO = player->getComponent<OverlapComponent>().getRect();
+    SDL_Rect playerC = player->getComponent<ColliderComponent>().getRect();
+    for (auto& enem : enemies) {
+        SDL_Rect enemyO = enem->getComponent<OverlapComponent>().getRect();
+        SDL_Rect enemyC = enem->getComponent<ColliderComponent>().getRect();
+        if (!b && Collision::AABB(enemyO,playerC)) {
+            overlap.insert(player);
+            b=true;
+        }
+        if (Collision::AABB(playerO,enemyC)) {
+            overlap.insert(enem);
+        }
+    }
+    b=false;
+    for (auto& i : colliders) {
+        if (!i->hasComponent<ColliderComponent>()) continue;
+        SDL_Rect collC = i->getComponent<ColliderComponent>().getRect();
+        if (Collision::AABB(playerO,collC)) {
+            overlap.insert(i);
+        }
+        else
+            for (auto& enem : enemies) {
+                SDL_Rect enemyO = enem->getComponent<OverlapComponent>().getRect();
+                if (Collision::AABB(enemyO,collC)) {
+                    overlap.insert(i);
+                    break;
+                }
+            }
     }
 }
 
@@ -650,7 +726,9 @@ void Game::checkInteractions() {
             }
         }
         else if (stat==5) {
-            if (pair.first*ConstantValues::localTileW==(int)playerpos.x && pair.second*ConstantValues::localTileH==(int)playerpos.y) {
+            int p1=pair.first*ConstantValues::localTileW;
+            int p2=pair.second*ConstantValues::localTileH;
+            if (p1>=playerpos.x-0.5*ConstantValues::localTileH && p1<=playerpos.x+0.5*ConstantValues::localTileW && p2>=playerpos.y-0.5*ConstantValues::localTileH && p2<=playerpos.y+0.5*ConstantValues::localTileW) {
                 stat=3;
                 camera = {0,0,(ConstantValues::mapW-1)*ConstantValues::localMapSizeW*ConstantValues::localTileW,(ConstantValues::mapH-1)*ConstantValues::localMapSizeH*ConstantValues::localTileH};
                 player->getComponent<TransformComponent>().position=positionb4;
@@ -770,21 +848,20 @@ void Game::render() {
     for (auto& i : tilesLocal) {
         i->draw();
     }
-    for (auto& i : enemies) {
+    for (auto& i : overlap) {
         i->draw();
     }
-    if (!order) {
-        for (auto& i : players) {
+    for (auto& i : enemies) {
+        if (!overlap.count(i))
             i->draw();
-        }
+    }
+    for (auto& i : players) {
+        if (!overlap.count(i))
+            i->draw();
     }
     for (auto&i : colliders) {
-        i->draw();
-    }
-    if (order) {
-        for (auto& i : players) {
+        if (!overlap.count(i))
             i->draw();
-        }
     }
     for (auto&i : ui) {
         i->draw();
@@ -810,8 +887,10 @@ void Game::handleinput() {
 void Game::update() {
     //printf("Local: (%f,%f)\nWorld: (%f,%f)\n",Game::localPosition->x,Game::localPosition->y,Game::worldPosition->x,Game::worldPosition->y);
     if (statb4!=stat) {
-        manager.delGroup(GroupEnemies);
-        if ((statb4==3 && stat!=5) ||(statb4==5 && stat!=3)) manager.delGroup(GroupUI); //deletes the UI
+        if ((statb4==3 && stat!=5) ||(statb4==5 && stat!=3)) {
+            manager.delGroup(GroupUI); //deletes the UI
+            manager.delGroup(GroupEnemies); //apaga os inimigos
+        }
         if (stat==1) {
             auto& menu(manager.addEntity());
             menu.addGroup(GroupMenus);
@@ -889,24 +968,27 @@ void Game::update() {
         }
         statb4=stat;
     }
-    Vector2D playerpos={0,0};
-    Vector2D localPos={0,0};
-    Vector2D worldPos={0,0};
+    Vector2D playerpos,localPos,worldPos;
+    std::map<Entity*,Vector2D> enemiesPos;
     if (player) {
-        playerpos = player->getComponent<TransformComponent>().position;
-        localPos.x = localPosition->x;
-        localPos.y = localPosition->y;
-        worldPos.x = worldPosition->x;
-        worldPos.y = worldPosition->y;
+        playerpos = player->getComponent<TransformComponent>().position.copy();
+        localPos = localPosition->copy();
+        worldPos = worldPosition->copy();
         if (stat!=5) updatePos();
         updateCam();
+    }
+    for (auto& enem : manager.getGroup(GroupEnemies)) {
+        enemiesPos[enem]=enem->getComponent<TransformComponent>().position.copy();
     }
     manager.refresh();
     manager.update();
     if ((stat==3 || stat==5) && player) {
         updateUI();
-        updateCollisions(playerpos,localPos,worldPos);
+        updateCollisions(playerpos,localPos,worldPos,enemiesPos);
+        updateOverlaps();
         checkInteractions();
     }
+    if (stat!=statb4) 
+        overlap.clear();// limpa o overlap para evitar chamar o draw de entidades apagadas
 }
 

@@ -11,6 +11,11 @@ Vector2D::Vector2D(float x, float y) {
     this->y=y;
 }
 
+Vector2D Vector2D::copy() {
+    Vector2D r(x,y);
+    return r;
+}
+
     
 Vector2D& Vector2D::add(const Vector2D& v1) {
     this->x+=v1.x;
@@ -89,4 +94,9 @@ Vector2D& Vector2D::zero() {
     this->x=0;
     this->y=0;
     return *this;
+}
+
+std::string Vector2D::toString() {
+    std::string r = "("+std::to_string(x)+","+std::to_string(y)+")";
+    return r;
 }
