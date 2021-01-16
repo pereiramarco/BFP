@@ -14,7 +14,7 @@
 #define DOWNLEFTCORNER -10 
 #define LEFTUPCORNER -12 
 #define UPRIGHTCORNER -13 
-#define ROOMSTART 15 // numero onde começam as salas tudo antes é usado para extras e paredes
+#define ROOMSTART 17 // numero onde começam as salas tudo antes é usado para extras e paredes
 
 double distanceBetweenPoints(int x1,int y1,int x2,int y2);
 

@@ -392,10 +392,10 @@ void Dungeon::showDungeon() {
     }
     printf("Number of Rooms: %d\n",roomNumber+1);
 }
-/*
 
+/*
 int main() {
-    
+    srand(time(NULL));
     for (int i=0;i<1;i++) {
         Dungeon* d = new Dungeon(100,60,30);// must be divisible by 2
         d->randomizeRooms();
@@ -404,15 +404,15 @@ int main() {
         d->showDungeon();
     }
 }
-
 */
-
 
 void Dungeon::addExtras() {
     for (int i=0;i<height*2;i++) {
         for (int j=0;j<width*2;j++) {
             if (!map[i][j] && map[i-1][j]==-2 && map[i][j-1]!=-10 && map[i][j+1]!=-11 && rand()%10>7) 
                 map[i][j]=-14;
+            if (!map[i][j] && ((!map[i-1][j] && !map[i+1][j]) && (!map[i][j-1] && !map[i][j+1])) && rand()%10>8)
+                map[i][j]=-15-rand()%2;
         }
     }
 

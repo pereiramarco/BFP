@@ -588,6 +588,10 @@ void Game::addTileInside(float x,float y,int mos) {
             case 13:
                 tileO.addComponent<ColliderComponent>(0,0,60,50,"chest");
             break;
+            case 14:
+            case 15:
+                tileO.addComponent<ColliderComponent>(0,0,60,64,"object");
+            break;
         }
         tileO.addGroup(GroupCollider);
         mos=0;
@@ -715,7 +719,7 @@ void Game::checkInteractions() {
         Dungeon * d = mapa->getDungeon(p);
         std::pair<int,int> pair=d->getEntrance();
         Vector2D playerpos=player->getComponent<TransformComponent>().position;
-        if (stat==3) {
+        if (stat==INGAME) {
             if (d && localPosition->x>23.5 && localPosition->x<24.5 && (int)localPosition->y==24) {
                 stat=5;
                 camera={0,0,90*ConstantValues::localTileW,63*ConstantValues::localTileH}; //why 63 and 90?
@@ -725,7 +729,7 @@ void Game::checkInteractions() {
                 loadDungeon();
             }
         }
-        else if (stat==5) {
+        else if (stat==INSIDE) {
             int p1=pair.first*ConstantValues::localTileW;
             int p2=pair.second*ConstantValues::localTileH;
             if (p1>=playerpos.x-0.5*ConstantValues::localTileH && p1<=playerpos.x+0.5*ConstantValues::localTileW && p2>=playerpos.y-0.5*ConstantValues::localTileH && p2<=playerpos.y+0.5*ConstantValues::localTileW) {
@@ -887,11 +891,11 @@ void Game::handleinput() {
 void Game::update() {
     //printf("Local: (%f,%f)\nWorld: (%f,%f)\n",Game::localPosition->x,Game::localPosition->y,Game::worldPosition->x,Game::worldPosition->y);
     if (statb4!=stat) {
-        if ((statb4==3 && stat!=5) ||(statb4==5 && stat!=3)) {
+        if ((statb4==INGAME && stat!=INSIDE) ||(statb4==INSIDE && stat!=INGAME)) {
             manager.delGroup(GroupUI); //deletes the UI
             manager.delGroup(GroupEnemies); //apaga os inimigos
         }
-        if (stat==1) {
+        if (stat==MAINMENU) {
             auto& menu(manager.addEntity());
             menu.addGroup(GroupMenus);
             menu.addComponent<MenuPositionComponent>(0,0,4);
@@ -899,7 +903,7 @@ void Game::update() {
             menu.addComponent<MenuKeyboardController>();
             player=NULL;
         }
-        else if (stat==2) {
+        else if (stat==WORLDMAP) {
             Game::camera={0,0,(ConstantValues::mapH-1)*ConstantValues::worldTileH,(ConstantValues::mapW-1)*ConstantValues::worldTileW};
             if (first==0) {
                 initSave("nome");
@@ -918,7 +922,7 @@ void Game::update() {
             nPlayer.addGroup(GroupPlayers);
             player = &nPlayer;
         }
-        else if (stat==3 && statb4==1) {
+        else if (stat==INGAME && statb4==MAINMENU) {
             camera = {0,0,(ConstantValues::mapW-1)*ConstantValues::localMapSizeW*ConstantValues::localTileW,(ConstantValues::mapH-1)*ConstantValues::localMapSizeH*ConstantValues::localTileH};
             localPosition=new Vector2D(ConstantValues::playerLocalPosX-1,ConstantValues::playerLocalPosY-1);
             //printf("WorldPosition x: %f y:%f\nLocalPosition x: %f y:%f\nCamera x:%d y:%d\n",worldPosition->x,worldPosition->y,Game::localPosition->x,Game::localPosition->y,camera.x,camera.y);
@@ -964,7 +968,10 @@ void Game::update() {
             loadLocal();
             initUI();
         }
-        else if (stat==4) {
+        else if (stat==OPTIONSMENU) {
+        }
+        else if (stat==INVENTORY) {
+            //initInventory();
         }
         statb4=stat;
     }
@@ -974,7 +981,7 @@ void Game::update() {
         playerpos = player->getComponent<TransformComponent>().position.copy();
         localPos = localPosition->copy();
         worldPos = worldPosition->copy();
-        if (stat!=5) updatePos();
+        if (stat!=INSIDE) updatePos();
         updateCam();
     }
     for (auto& enem : manager.getGroup(GroupEnemies)) {
@@ -982,7 +989,7 @@ void Game::update() {
     }
     manager.refresh();
     manager.update();
-    if ((stat==3 || stat==5) && player) {
+    if ((stat==INGAME || stat==INSIDE) && player) {
         updateUI();
         updateCollisions(playerpos,localPos,worldPos,enemiesPos);
         updateOverlaps();

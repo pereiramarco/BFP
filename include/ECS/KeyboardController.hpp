@@ -57,8 +57,10 @@ public:
             case SDLK_e:
                 interact=true;
                 break;
+            case SDLK_TAB:
+                //Game::stat=INVENTORY;
             case SDLK_ESCAPE:
-                Game::stat=1;
+                Game::stat=MAINMENU;
                 entity->destroy();
                 break;
             case SDLK_y:

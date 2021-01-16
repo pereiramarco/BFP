@@ -11,6 +11,15 @@
 #include <cstdlib>
 #include <fstream>
 
+//defines para os diferentes stats do jogo
+#define CLOSE 0
+#define MAINMENU 1
+#define WORLDMAP 2
+#define INGAME 3
+#define OPTIONSMENU 4
+#define INSIDE 5
+#define INVENTORY 6
+
 
 class Game {
     
@@ -34,6 +43,7 @@ public:
     void addTileInside(float x,float y,int mos);
     void initUI();
     void updateUI();
+    //void initInventory();
 
     static void addTileWorld(float x,float y,int tile);
     static int statb4;
