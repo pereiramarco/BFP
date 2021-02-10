@@ -3,7 +3,7 @@
 #include "SDL2/SDL.h"
 #include "../TextureManager.hpp"
 #include "TransformComponent.hpp"
-#include "../Game.hpp"
+#include "../GameData.hpp"
 #include "../ConstantValues.hpp"
 #include "Animation.hpp"
 
@@ -31,14 +31,14 @@ public:
 	SpriteComponent() = default;
 
 	SpriteComponent(std::string text,bool upg,SDL_Rect r1,SDL_Rect r2) {
-		this->texture=Game::textures->getTexture(text);
+		this->texture=GameData::textures->getTexture(text);
 		updating=upg;
 		srcRect=r1;
 		destRect=r2;
 	}
 
 	SpriteComponent(std::string text) {
-		this->texture=Game::textures->getTexture(text);
+		this->texture=GameData::textures->getTexture(text);
 		srcRect.x = srcRect.y = destRect.x = destRect.y = 0;
 		srcRect.w = 32;
 		srcRect.h = 32;
@@ -47,7 +47,7 @@ public:
 	}
 
 	SpriteComponent(std::string text,bool anim) {
-		this->texture=Game::textures->getTexture(text);
+		this->texture=GameData::textures->getTexture(text);
 		animated=anim;
 		srcRect.x = srcRect.y = destRect.x = destRect.y = 0;
 		srcRect.w = 32;
@@ -80,7 +80,7 @@ public:
 	}
 
 	void setTexture(std::string text) {
-		this->texture=Game::textures->getTexture(text);
+		this->texture=GameData::textures->getTexture(text);
 	}
 
 	void setWidthPercentage(float p) {
@@ -160,8 +160,8 @@ public:
 				srcRect.x= srcRect.w * static_cast<int>((SDL_GetTicks()/speed)%frames);
 				srcRect.y=index*srcRect.h;
 			}
-			destRect.x = skip*static_cast<int> (transform->position.x - Game::camera.x);
-			destRect.y = skip*static_cast<int> (transform->position.y - Game::camera.y);
+			destRect.x = skip*static_cast<int> (transform->position.x - GameData::camera.x);
+			destRect.y = skip*static_cast<int> (transform->position.y - GameData::camera.y);
 		}
 	}
 

@@ -1,6 +1,7 @@
 #pragma once 
 
-#include "../Game.hpp"
+#include "../GameData.hpp"
+#include "../GameEngine.hpp"
 #include "ECS.hpp"
 #include "MenuPositionComponent.hpp"
 
@@ -13,51 +14,29 @@ public:
     }
 
     void update() override {
-        if (Game::event.type == SDL_KEYDOWN) {
-            switch (Game::event.key.keysym.sym)
+
+        if (GameData::KEYS[SDLK_UP]) transform->velocity.y=-1;
+        if (GameData::KEYS[SDLK_DOWN]) transform->velocity.y=1;
+        if (!GameData::KEYS[SDLK_DOWN] && !GameData::KEYS[SDLK_UP]) transform->velocity.y=0;
+        if (GameData::KEYS[SDLK_RETURN]) {
+            switch ((int)transform->position.y)
             {
-            case SDLK_UP:
-                transform->velocity.y=-1;
+            case 0:
+                GameEngine::change=2;
                 break;
-            case SDLK_DOWN:
-                transform->velocity.y=1;
+            case 1:
+                GameEngine::change=3;
                 break;
-            case SDLK_RETURN:
-                Game::statb4=Game::stat;
-                switch ((int)transform->position.y)
-                {
-                case 0:
-                    Game::stat=2;
-                    break;
-                case 1:
-                    Game::stat=3;
-                    break;
-                case 2:
-                    Game::stat=4;
-                    break;
-                case 3:
-                    Game::stat=0;
-                    break;
-                default:
-                    break;
-                }
-                entity->destroy();
+            case 2:
+                GameEngine::change=4;
+                break;
+            case 3:
+                GameEngine::change=0;
                 break;
             default:
                 break;
             }
-        }
-
-        if (Game::event.type == SDL_KEYUP) {
-            switch (Game::event.key.keysym.sym)
-            {
-            case SDLK_UP:
-                transform->velocity.y=0;
-                break;
-            case SDLK_DOWN:
-                transform->velocity.y=0;
-                break;
-            }
+            entity->destroy();
         }
     }
 };

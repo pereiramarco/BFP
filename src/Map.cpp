@@ -1,6 +1,6 @@
 #include "../include/Map.hpp"
 #include "../include/TextureManager.hpp"
-#include "../include/Game.hpp"
+#include "../include/GameData.hpp"
 
 Mapa::Mapa(SDL_Renderer * ren,int h,int w) {
     height=h;
@@ -18,7 +18,7 @@ Mapa::Mapa(SDL_Renderer * ren,int h,int w) {
     randomizeLocalMaps();
     for (int i=0;i<height;i++) {
         for (int j=0;j<width;j++) {
-            Game::addTileWorld(i,j,worldMap[i][j]);
+            GameData::addTileWorld(i,j,worldMap[i][j]);
         }
     }
 }
@@ -138,7 +138,7 @@ void Mapa::randomizeMap(int fP) {
             if (worldMap[i][j]!=0) {
                 int r=rand()%1001;
                 if (r<=15) {
-                    Game::addTileWorld(i,j,worldMap[i][j]);
+                    GameData::addTileWorld(i,j,worldMap[i][j]);
                     r=rand()%101;
                     if (r<=60) {
                         worldMap[i][j]=5;

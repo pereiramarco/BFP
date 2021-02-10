@@ -4,7 +4,7 @@
 #include "../AssetManager.hpp"
 #include "../TextureManager.hpp"
 #include "MenuPositionComponent.hpp"
-#include "../Game.hpp"
+#include "../GameData.hpp"
 #include "../ConstantValues.hpp"
 
 class MenuSpriteComponent : public Component
@@ -26,7 +26,7 @@ public:
 
 	void setTexture(std::string path)
 	{
-		texture = Game::textures->getTexture(path);
+		texture = GameData::textures->getTexture(path);
 	}
 
 	void init() override {

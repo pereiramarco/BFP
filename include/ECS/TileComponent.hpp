@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../TextureManager.hpp"
+#include "../GameData.hpp"
 #include "TransformComponent.hpp"
 #include "SpriteComponent.hpp"
 #include "SDL2/SDL.h"
@@ -106,11 +107,11 @@ class TileComponent : public Component {
     }
 
     void update() override {
-        if (Game::stat!=2 && Game::stat!=3 && Game::stat!=5) {
+        if (GameData::stat!=2 && GameData::stat!=3) {
             sprite->setDraw(false);
         }
         else {
-            sprite->setDraw((Game::stat==2) == world);
+            sprite->setDraw((GameData::stat==2) == world);
         }
     }
 };
