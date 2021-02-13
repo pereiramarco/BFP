@@ -10,6 +10,7 @@ GameLevelIngame::GameLevelIngame(GameData* gameDataG) {
     gameData->setCamera(camera);
     gameData->setLocalPosition(new Vector2D(ConstantValues::playerLocalPosX-1,ConstantValues::playerLocalPosY-1));
     Vector2D * worldPosition = gameData->getWorldPosition();
+    interact=false;
     //printf("WorldPosition x: %f y:%f\nLocalPosition x: %f y:%f\nCamera x:%d y:%d\n",worldPosition->x,worldPosition->y,Game::localPosition->x,Game::localPosition->y,camera.x,camera.y);
     auto& oldPlayer(gameData->addEntity());
     oldPlayer.addComponent<TransformComponent>();
@@ -83,6 +84,31 @@ void GameLevelIngame::render() {
     }
     gameData->renderPresent();
 }
+
+void GameLevelIngame::handleinput() {
+    SDL_Event event = gameData->getEvent();
+    while (SDL_PollEvent(&event)) {
+        switch (event.type) {
+            case SDL_QUIT:
+            break;
+            case SDL_KEYDOWN:
+                switch (event.key.keysym.sym) {
+                    case SDLK_ESCAPE: 
+                        GameEngine::change=1;
+                    break;
+                    case SDLK_e: 
+                        interact=true;
+                    break;
+                }
+                gameData->setKey(event.key.keysym.sym,true);
+            break;
+            case SDL_KEYUP:
+                gameData->setKey(event.key.keysym.sym,false);
+            break;
+        }
+    }
+}
+
 
 void GameLevelIngame::initUI() {
 
@@ -360,7 +386,7 @@ void GameLevelIngame::updateOverlaps() {
 }
 
 void GameLevelIngame::checkInteractions() {
-    if (player->getComponent<KeyboardController>().interact) {
+    if (interact) {
         Vector2D* worldPosition=gameData->getWorldPosition();
         Vector2D* localPosition = gameData->getLocalPosition();
         SDL_Rect camera;
@@ -390,7 +416,7 @@ void GameLevelIngame::checkInteractions() {
                 loadLocal();
             }
         }
-        player->getComponent<KeyboardController>().interact=false;
+        interact=false;
         gameData->setCamera(camera);
     }
 }

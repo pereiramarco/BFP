@@ -6,8 +6,8 @@ all: link
 run: link
 	./jogo
 
-link: texman.o vec2d.o assetman.o ECS.o dungeons.o settlements.o lmap.o map.o gamelevelmenu.o gamelevelingame.o gamelevelworld.o gamelevel.o gamedata.o gameengine.o main.o
-	g++ -Wall main.o dungeons.o settlements.o lmap.o map.o gameengine.o gamelevelmenu.o gamelevelingame.o gamelevelworld.o gamelevel.o gamedata.o vec2d.o ECS.o texman.o assetman.o $(SDL_FLAG) -o jogo
+link: texman.o vec2d.o assetman.o ECS.o dungeons.o settlements.o lmap.o map.o gamelevelmenu.o gamelevelingame.o gamelevelworld.o gamedata.o gameengine.o main.o
+	g++ -Wall main.o dungeons.o settlements.o lmap.o map.o gameengine.o gamelevelmenu.o gamelevelingame.o gamelevelworld.o gamedata.o vec2d.o ECS.o texman.o assetman.o $(SDL_FLAG) -o jogo
 
 ECS.o: include/ECS/ECS.hpp
 	g++ -o ECS.o -c -g -Wall src/ECS/ECS.cpp
@@ -41,10 +41,7 @@ gamelevelworld.o: include/GameLevelWorld.hpp include/GameLevel.hpp include/GameD
 
 gamelevelingame.o: include/GameLevelIngame.hpp include/GameLevel.hpp include/GameData.hpp
 	g++ -o gamelevelingame.o -c -Wall -g src/GameLevelIngame.cpp
-
-gamelevel.o: include/GameLevel.hpp $(COMPONENTS) include/AssetManager.hpp include/Map.hpp include/Groups.hpp include/GameData.hpp
-	g++ -o gamelevel.o -c -Wall -g src/GameLevel.cpp
-
+	
 gamedata.o: include/GameData.hpp $(COMPONENTS) include/AssetManager.hpp include/Map.hpp include/Groups.hpp
 	g++ -o gamedata.o -c -Wall -g src/GameData.cpp
 

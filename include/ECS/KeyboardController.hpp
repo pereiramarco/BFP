@@ -52,25 +52,5 @@ public:
         if (shift-1 && !transform->isVel0()) { //player is running
             att->addToAttribute(3,att->getAttribute(9));
         }
-        if (GameData::KEYS[SDLK_ESCAPE]) {
-            GameEngine::change=1;
-            entity->destroy();
-        }
-        if (GameData::KEYS[SDLK_e]) 
-            interact=true;
-        if (GameData::KEYS[SDLK_y])
-            att->addToAttribute(1,2);
-        if (GameData::KEYS[SDLK_t])
-            att->addToAttribute(1,-2);
-        if (GameData::KEYS[SDLK_h])
-            att->addToAttribute(5,2);
-        if (GameData::KEYS[SDLK_g])
-            att->addToAttribute(5,-2);
-        if (GameData::KEYS[SDLK_n])
-            att->addToAttribute(3,2);
-        if (GameData::KEYS[SDLK_b])
-            att->addToAttribute(3,-2);
-        if (GameData::KEYS[SDLK_x])
-            att->addToAttribute(7,10);
     }
 };

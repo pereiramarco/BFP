@@ -67,22 +67,16 @@ void GameData::initSave(std::string savename) {
     mapa = new Mapa(renderer,ConstantValues::mapH,ConstantValues::mapW);
 }
 
+void GameData::clearManager() {
+    manager.clear();
+}
+
 bool GameData::isRunning() {
     return is_running;
 }
 
 void GameData::setRunning(bool b) {
     is_running=b;
-}
-
-void GameData::addTileWorld(float x,float y,int mos) {
-    int r1,r2,d;
-    auto& tile(manager.addEntity());
-    r1=ConstantValues::worldTileH;
-    r2=ConstantValues::worldTileW;
-    d=16; //size inside sprite sheet
-    tile.addComponent<TileComponent>(x,y,d,d,r2,r1,mos);
-    tile.addGroup(GroupWorldMap);
 }
 
 bool GameData::isFirst() {
@@ -160,10 +154,29 @@ void GameData::renderPresent() {
 Dungeon* GameData::getDungeon(std::pair<int,int> pos) {
     return mapa->getDungeon(pos);
 }
+
 int GameData::getSettlementBuildingV(int x,int y,int type) {
     return mapa->getSettlementBuildingV(x,y,type);
 }
+
 LocalMap * GameData::getLocalMap(int x,int y) {
     return mapa->getLocalMap(x,y);
+}
+
+int GameData::getWorldMapHeight() {
+    return mapa->getHeight();
+}
+
+int GameData::getWorldMapWidth() {
+    return mapa->getWidth();
+
+}
+
+int GameData::getWorldMapTile(int i,int j) {
+    return mapa->getTile(i,j);
+}
+
+std::map<std::pair<int,int>,Location> GameData::getLocations() {
+    return mapa->getLocations();
 }
 

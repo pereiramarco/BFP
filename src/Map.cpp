@@ -16,11 +16,6 @@ Mapa::Mapa(SDL_Renderer * ren,int h,int w) {
     }
     randomizeMap(70);
     randomizeLocalMaps();
-    for (int i=0;i<height;i++) {
-        for (int j=0;j<width;j++) {
-            GameData::addTileWorld(i,j,worldMap[i][j]);
-        }
-    }
 }
 
 int Mapa::getHeight() {
@@ -61,7 +56,7 @@ void Mapa::setLocalMapmap(int y,int x,int ** map,char d) {
 
 Dungeon* Mapa::getDungeon(std::pair<int,int> p) {
      return this->dungeons[p];
- }
+}
 
 std::pair<char,int> Mapa::getLocalMapTile(int wI,int wJ,int i,int j) {
     return mapa[wI][wJ]->getTile(i,j);
@@ -137,17 +132,16 @@ void Mapa::randomizeMap(int fP) {
                 worldMap[i][j]=2;
             if (worldMap[i][j]!=0) {
                 int r=rand()%1001;
-                if (r<=15) {
-                    GameData::addTileWorld(i,j,worldMap[i][j]);
+                if (r<=30) {
                     r=rand()%101;
                     if (r<=60) {
-                        worldMap[i][j]=5;
+                        locations[std::pair<int,int>(i,j)]=Location::Dungeon;
                     }
                     else if (r<=90) {
-                        worldMap[i][j]=4;
+                        locations[std::pair<int,int>(i,j)]=Location::Village;
                     }
                     else {
-                        worldMap[i][j]=3;
+                        locations[std::pair<int,int>(i,j)]=Location::Kingdom;
                     }
                 }
             }
@@ -169,31 +163,35 @@ void Mapa::randomizeLocalMaps() {
                 esq=worldMap[i][j-1];
             if (j<width-1)
                 dir=worldMap[i][j+1];
-            if (worldMap[i][j]==5) {
+            if (locations.find(std::pair<int,int>(i,j))==locations.end())
+                mapa[i][j]->randomizeTile(worldMap[i][j]+'a',cima+'a',dir+'a',baixo+'a',esq+'a');
+            else if (locations[std::pair<int,int>(i,j)]==Location::Dungeon) {
                 std::pair<int,int> p(i,j);
                 Dungeon *d = new Dungeon(120,80,30);
                 d->randomizeRooms();
                 d->polishDungeon();
                 d->addExtras();
                 dungeons[p]=d;
+                mapa[i][j]->randomizeTile('f',cima+'a',dir+'a',baixo+'a',esq+'a');
             }
-            if (worldMap[i][j]==3) {
+            else if(locations[std::pair<int,int>(i,j)]==Location::Kingdom) {
                 std::pair<int,int> p(i,j);
                 Settlement *s = new Settlement(50,50,true);
                 s->makeSettlement();
                 settlements[p]=s;
                 setLocalMapmap(i,j,s->getMap(),'d');
             }
-            else if (worldMap[i][j]==4) {
+            else if (locations[std::pair<int,int>(i,j)]==Location::Village) {
                 std::pair<int,int> p(i,j);
                 Settlement *s = new Settlement(50,50,false);
                 s->makeSettlement();
                 settlements[p]=s;
-                setLocalMapmap(i,j,s->getMap(),'e');
-                
+                setLocalMapmap(i,j,s->getMap(),'e');                
             }
-            else
-                mapa[i][j]->randomizeTile(worldMap[i][j]+'a',cima+'a',dir+'a',baixo+'a',esq+'a');
         }
     }
+}
+
+std::map<std::pair<int,int>,Location> Mapa::getLocations() {
+    return locations;
 }

@@ -82,6 +82,7 @@ public:
 	void delGroup(Group mGroup) {
 		groupBitset[mGroup]=false;
 	}
+
 	template <class T> bool hasComponent() const
 	{
 		return componentBitset[getComponentTypeID<T>()];
@@ -166,5 +167,11 @@ public:
 		std::unique_ptr<Entity> uPtr { e };
 		entities.emplace_back(std::move(uPtr));
 		return *e;
+	}
+
+	void clear() {
+		for (auto& e : entities)  {
+			e->destroy();
+		}
 	}
 }; 

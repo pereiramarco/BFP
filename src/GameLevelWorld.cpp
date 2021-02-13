@@ -29,6 +29,66 @@ GameLevelWorld::GameLevelWorld(GameData* gameDataG) {
     squareD.getComponent<TransformComponent>().speed=0.25;
     squareD.addGroup(GroupPlayers);
     square = &squareD;
+    loadWorld();
+}
+
+
+void GameLevelWorld::addTileWorld(float x,float y,int mos) {
+    int r1,r2,d;
+    auto& tile(gameData->addEntity());
+    r1=ConstantValues::worldTileH;
+    r2=ConstantValues::worldTileW;
+    d=16; //size inside sprite sheet
+    tile.addComponent<TileComponent>(x,y,d,d,r2,r1,mos);
+    tile.addGroup(GroupWorldMap);
+}
+
+
+void GameLevelWorld::loadWorld() {
+    int height=gameData->getWorldMapHeight();
+    int width=gameData->getWorldMapWidth();
+    for (int i=0;i<height;i++) {
+        for (int j=0;j<width;j++) {
+            int id=gameData->getWorldMapTile(i,j);
+            addTileWorld(i,j,id);
+        }
+    }
+    int id;
+    for (auto& entry : gameData->getLocations()) {
+        switch (entry.second) {
+            case Location::Village:
+                id=4;
+            break;
+            case Location::Kingdom:
+                id=3;
+            break;
+            case Location::Dungeon:
+                id=5;
+            break;
+        }
+        addTileWorld(entry.first.first,entry.first.second,id);
+    }
+}
+
+void GameLevelWorld::handleinput() {
+    SDL_Event event = gameData->getEvent();
+    while (SDL_PollEvent(&event)) {
+        switch (event.type) {
+            case SDL_QUIT:
+            break;
+            case SDL_KEYDOWN:
+                switch (event.key.keysym.sym) {
+                    case SDLK_ESCAPE: 
+                        GameEngine::change=1;
+                    break;
+                }
+                gameData->setKey(event.key.keysym.sym,true);
+            break;
+            case SDL_KEYUP:
+                gameData->setKey(event.key.keysym.sym,false);
+            break;
+        }
+    }
 }
 
 void GameLevelWorld::render() {

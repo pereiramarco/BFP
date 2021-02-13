@@ -22,6 +22,22 @@ void GameLevelMenu::render() {
     gameData->renderPresent();
 }
 
+void GameLevelMenu::handleinput() {
+    SDL_Event e = gameData->getEvent();
+    SDL_PollEvent(&e);
+    switch (e.type) {
+        case SDL_QUIT:
+            gameData->setRunning(false);
+        break;
+        case SDL_KEYDOWN:
+            gameData->setKey(e.key.keysym.sym,true);
+        break;
+        case SDL_KEYUP:
+            gameData->setKey(e.key.keysym.sym,false);
+        break;
+    }
+}
+
 void GameLevelMenu::update() {
     gameData->managerRefresh();
     gameData->managerUpdate();

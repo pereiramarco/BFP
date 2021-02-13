@@ -29,23 +29,25 @@ bool GameEngine::isRunning() {
 }
 
 void GameEngine::changeState() {
+    if (!GameEngine::change) {
+        gameData->setRunning(false); 
+        return;
+    } 
+    if (GameEngine::change==-1) return;
+    gameData->clearManager();
+    gameData->managerRefresh();
     switch (GameEngine::change) {
-        case 0:
-           gameData->setRunning(false); 
-        break;
         case 1: //Menu
             gameState=new GameLevelMenu(gameData);
-            gameData->stat=1;
         break;
         case 2: //World
             gameState=new GameLevelWorld(gameData);
-            gameData->stat=2;
         break;
         case 3: //Ingame
             gameState=new GameLevelIngame(gameData);
-            gameData->stat=3;
         break;
     }
+    gameData->stat=GameEngine::change;
     GameEngine::change=-1;
 }
 

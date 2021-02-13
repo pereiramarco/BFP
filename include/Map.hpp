@@ -4,6 +4,7 @@
 #include "LocalMap.hpp"
 #include "Dungeon.hpp"
 #include "Settlement.hpp"
+#include "Locations.hpp"
 #include <math.h>
 #include <ctime>
 #include <map>
@@ -25,6 +26,7 @@ public:
     bool hasWaterNeighbour(int x,int y);
     int closestCreator(int x,int y);
     void randomizeLocalMaps();
+    std::map<std::pair<int,int>,Location> getLocations();
 private:
     SDL_Renderer * renderer;
     SDL_Rect srcR,destR;
@@ -33,6 +35,7 @@ private:
     int width;
     LocalMap ***mapa;
     std::map<std::pair<int,int>,Dungeon*> dungeons;
+    std::map<std::pair<int,int>,Location> locations;
     std::map<std::pair<int,int>,Settlement*> settlements;
     std::map<char,SDL_Texture*> mapOfTexs;
 };

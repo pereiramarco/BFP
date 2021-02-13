@@ -9,6 +9,7 @@ class GameLevelIngame : public GameLevel {
 public:
     GameLevelIngame(GameData * gameData);
     
+    virtual void handleinput();
     virtual void update();
     virtual void render();
 
@@ -17,6 +18,7 @@ private:
     bool inside;
     Vector2D positionOutside;
     std::unordered_set<Entity*> overlap;
+    bool interact;
 
     void initUI();
     void updatePos();

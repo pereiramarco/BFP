@@ -13,6 +13,7 @@ public:
 
     GameData(const char* title, int x, int y, int width, int height,bool fullscreen);
     bool isRunning();
+    void clearManager();
     void setRunning(bool running);
     void firstF(bool b);
     bool isFirst();
@@ -35,9 +36,10 @@ public:
     Dungeon* getDungeon(std::pair<int,int> pos);
     int getSettlementBuildingV(int x,int y,int type);
     LocalMap * getLocalMap(int x,int y);
-    
-
-    static void addTileWorld(float x,float y,int tile);
+    int getWorldMapHeight();
+    int getWorldMapWidth();
+    int getWorldMapTile(int i,int j);
+    std::map<std::pair<int,int>,Location> getLocations();
 
     static int stat;
     static bool xpadd;

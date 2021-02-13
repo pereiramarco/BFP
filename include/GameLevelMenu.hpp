@@ -8,6 +8,7 @@ class GameLevelMenu : public GameLevel {
 public:
     GameLevelMenu(GameData * gameData);
 
+    virtual void handleinput();
     virtual void update();
     virtual void render();
 
