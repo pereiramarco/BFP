@@ -24,6 +24,18 @@ GameLevelIngame::GameLevelIngame(GameData* gameDataG) {
     oldPlayer.getComponent<TransformComponent>().position.y=((int)worldPosition->y)*ConstantValues::localMapSizeH*ConstantValues::localTileH+ConstantValues::screenSizeH/2;
     oldPlayer.addGroup(GroupPlayers);
     player = &oldPlayer;
+
+    auto& dog(gameData->addEntity());
+    dog.addComponent<TransformComponent>();
+    dog.getComponent<TransformComponent>().setSpeed(2);
+    dog.addComponent<SpriteComponent>("Doggo",true);
+    dog.getComponent<SpriteComponent>().addStandardAnimations();
+    dog.addComponent<OverlapComponent>(64,50);
+    dog.addComponent<ColliderComponent>(17,50,30,14,"doggo");
+    dog.getComponent<TransformComponent>().position.x=((int)worldPosition->x)*ConstantValues::localMapSizeW*ConstantValues::localTileW+ConstantValues::screenSizeW/2;
+    dog.getComponent<TransformComponent>().position.y=((int)worldPosition->y)*ConstantValues::localMapSizeH*ConstantValues::localTileH+ConstantValues::screenSizeH/2;
+    dog.addComponent<WanderAroundComponent>(100);
+    dog.addGroup(GroupEnemies);
     
     auto& monster(gameData->addEntity());
     monster.addComponent<TransformComponent>();

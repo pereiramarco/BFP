@@ -61,6 +61,7 @@ GameData::GameData(const char* title, int x, int y, int width, int height,bool f
     textures->addTexture("XPBar","assets/XPBar.png");
     textures->addTexture("Pumpkin-dude","assets/Pumpkin-dude.png");
     textures->addTexture("Skeleton-dude","assets/Skeleton-dude.png");
+    textures->addTexture("Doggo","assets/Doggo.png");
 }
 
 void GameData::initSave(std::string savename) {

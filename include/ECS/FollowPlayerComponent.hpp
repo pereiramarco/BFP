@@ -2,7 +2,6 @@
 
 #include <map>
 #include <string>
-#include "Components.hpp"
 #include "SDL2/SDL.h"
 #include "TransformComponent.hpp"
 

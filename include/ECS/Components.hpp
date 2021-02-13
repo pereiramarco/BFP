@@ -12,3 +12,4 @@
 #include "OverlapComponent.hpp"
 #include "AttributesComponent.hpp"
 #include "FollowPlayerComponent.hpp"
+#include "WanderAroundCoponent.hpp"
